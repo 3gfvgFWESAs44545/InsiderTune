@@ -1,0 +1,6 @@
+[submodule "lyrics"]
+	path = lyrics
+	url = https://github.com/rukamori/lyrics.git
+[submodule "morideobfuscator"]
+	path = morideobfuscator
+	url = https://github.com/rukamori/morideobfuscator.git

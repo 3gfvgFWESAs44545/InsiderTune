@@ -1,0 +1,12 @@
+Pixel Notes plays video game soundtracks from <b>khinsider</b> (downloads.khinsider.com).
+
+<ul>
+<li>Browse by platform, year, type and charts</li>
+<li>Search albums and songs</li>
+<li>MP3 or FLAC playback where available</li>
+<li>Offline downloads, and Save to phone for real audio files</li>
+<li>Optional khinsider sign-in to sync favourites</li>
+<li>Last.fm, Libre.fm and ListenBrainz scrobbling</li>
+</ul>
+
+Pixel Notes is a fork of ArchiveTune and is licensed under GPL-3.0.

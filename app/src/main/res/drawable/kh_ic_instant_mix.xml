@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material Symbols Rounded (Apache 2.0): instant_mix -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="960"
+    android:viewportHeight="960">
+    <group android:translateX="-0" android:translateY="960">
+        <path android:fillColor="#FFFFFFFF" android:pathData="M240-160q-17 0-28.5-11.5T200-200v-240h-40q-17 0-28.5-11.5T120-480q0-17 11.5-28.5T160-520h160q17 0 28.5 11.5T360-480q0 17-11.5 28.5T320-440h-40v240q0 17-11.5 28.5T240-160Zm0-440q-17 0-28.5-11.5T200-640v-120q0-17 11.5-28.5T240-800q17 0 28.5 11.5T280-760v120q0 17-11.5 28.5T240-600Zm160 0q-17 0-28.5-11.5T360-640q0-17 11.5-28.5T400-680h40v-80q0-17 11.5-28.5T480-800q17 0 28.5 11.5T520-760v80h40q17 0 28.5 11.5T600-640q0 17-11.5 28.5T560-600H400Zm80 440q-17 0-28.5-11.5T440-200v-280q0-17 11.5-28.5T480-520q17 0 28.5 11.5T520-480v280q0 17-11.5 28.5T480-160Zm240 0q-17 0-28.5-11.5T680-200v-80h-40q-17 0-28.5-11.5T600-320q0-17 11.5-28.5T640-360h160q17 0 28.5 11.5T840-320q0 17-11.5 28.5T800-280h-40v80q0 17-11.5 28.5T720-160Zm0-280q-17 0-28.5-11.5T680-480v-280q0-17 11.5-28.5T720-800q17 0 28.5 11.5T760-760v280q0 17-11.5 28.5T720-440Z" />
+    </group>
+</vector>

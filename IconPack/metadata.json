@@ -1,0 +1,100 @@
+[
+  {
+    "Id": "pixel-note-green-white",
+    "Name": "Green",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-green-white.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-red",
+    "Name": "Red",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-red.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-orange",
+    "Name": "Orange",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-orange.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-yellow",
+    "Name": "Yellow",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-yellow.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-blue",
+    "Name": "Blue",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-blue.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-purple",
+    "Name": "Purple",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-purple.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-pink",
+    "Name": "Pink",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-pink.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-teal",
+    "Name": "Teal",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-teal.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-black",
+    "Name": "Black",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-black.xml",
+    "BackgroundColor": "#FFFFFF"
+  },
+  {
+    "Id": "pixel-note-white-red",
+    "Name": "White on red",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-white-red.xml",
+    "BackgroundColor": "#E4002B"
+  },
+  {
+    "Id": "pixel-note-white-blue",
+    "Name": "White on blue",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-white-blue.xml",
+    "BackgroundColor": "#1F6FEB"
+  },
+  {
+    "Id": "pixel-note-white-purple",
+    "Name": "White on purple",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-white-purple.xml",
+    "BackgroundColor": "#6D28D9"
+  },
+  {
+    "Id": "pixel-note-green-black",
+    "Name": "Green on black",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-green-black.xml",
+    "BackgroundColor": "#0B0B0F"
+  },
+  {
+    "Id": "pixel-note-gold-black",
+    "Name": "Gold on black",
+    "Author": "Pixel Notes",
+    "Source": "pixel-note-gold-black.xml",
+    "BackgroundColor": "#0B0B0F"
+  }
+]
