@@ -357,7 +357,6 @@ private fun AndroidAutoSettingsFailure(
 @StringRes
 private fun AndroidAutoCustomAction.labelResource(): Int = when (this) {
     AndroidAutoCustomAction.LIKE -> R.string.android_auto_action_like
-    AndroidAutoCustomAction.START_RADIO -> R.string.android_auto_action_radio
     AndroidAutoCustomAction.SHUFFLE -> R.string.android_auto_action_shuffle
     AndroidAutoCustomAction.REPEAT -> R.string.android_auto_action_repeat
     AndroidAutoCustomAction.NONE -> R.string.android_auto_action_none
@@ -366,7 +365,6 @@ private fun AndroidAutoCustomAction.labelResource(): Int = when (this) {
 @DrawableRes
 private fun AndroidAutoCustomAction.iconResource(): Int = when (this) {
     AndroidAutoCustomAction.LIKE -> R.drawable.favorite
-    AndroidAutoCustomAction.START_RADIO -> R.drawable.radio
     AndroidAutoCustomAction.SHUFFLE -> R.drawable.shuffle
     AndroidAutoCustomAction.REPEAT -> R.drawable.repeat
     AndroidAutoCustomAction.NONE -> R.drawable.more_horiz

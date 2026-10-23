@@ -2005,7 +2005,7 @@ private fun FeaturedPlaylistCard(
         remember(sequentialEndpoint, playerConnection) {
             { playerConnection.playQueue(YouTubeQueue.playlist(sequentialEndpoint)) }
         }
-    val secondaryEndpoint = card.radioEndpoint ?: card.shuffleEndpoint
+    val secondaryEndpoint = card.shuffleEndpoint
     val playSecondary =
         remember(secondaryEndpoint, playerConnection) {
             secondaryEndpoint?.let { endpoint -> { playerConnection.playQueue(YouTubeQueue.playlist(endpoint)) } }
@@ -2172,15 +2172,8 @@ private fun FeaturedPlaylistCard(
                         modifier = Modifier.size(56.dp),
                     ) {
                         Icon(
-                            painter = painterResource(if (card.radioEndpoint != null) R.drawable.radio else R.drawable.shuffle),
-                            contentDescription =
-                                stringResource(
-                                    if (card.radioEndpoint != null) {
-                                        R.string.start_radio
-                                    } else {
-                                        R.string.shuffle
-                                    },
-                                ),
+                            painter = painterResource(R.drawable.shuffle),
+                            contentDescription = stringResource(R.string.shuffle),
                         )
                     }
                 }

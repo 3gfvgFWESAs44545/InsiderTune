@@ -6,7 +6,6 @@ import moe.rukamori.archivetune.innertube.models.AccountChannel
 import moe.rukamori.archivetune.innertube.models.AccountInfo
 import moe.rukamori.archivetune.innertube.models.AlbumItem
 import moe.rukamori.archivetune.innertube.models.BrowseEndpoint
-import moe.rukamori.archivetune.innertube.models.MediaInfo
 import moe.rukamori.archivetune.innertube.models.SearchSuggestions
 import moe.rukamori.archivetune.innertube.models.SongItem
 import moe.rukamori.archivetune.innertube.models.WatchEndpoint
@@ -242,6 +241,4 @@ interface MusicBackend {
 
     suspend fun deletePlaylist(playlistId: String): Result<Unit>
 
-    // Misc
-    suspend fun getMediaInfo(videoId: String): Result<MediaInfo>
 }

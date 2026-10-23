@@ -56,7 +56,7 @@ class AndroidAutoSettingsRepository @Inject constructor(
             ),
             secondaryAction = AndroidAutoCustomAction.fromPreference(
                 preferences[AndroidAutoSecondaryActionKey],
-                AndroidAutoCustomAction.START_RADIO,
+                AndroidAutoCustomAction.SHUFFLE,
             ),
         )
     }.distinctUntilChanged()
@@ -110,7 +110,7 @@ class AndroidAutoSettingsRepository @Inject constructor(
         ),
         secondaryAction = AndroidAutoCustomAction.fromPreference(
             context.dataStore[AndroidAutoSecondaryActionKey],
-            AndroidAutoCustomAction.START_RADIO,
+            AndroidAutoCustomAction.SHUFFLE,
         ),
     )
 

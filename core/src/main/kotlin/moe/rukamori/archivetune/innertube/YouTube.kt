@@ -35,7 +35,6 @@ import moe.rukamori.archivetune.innertube.models.ArtistItem
 import moe.rukamori.archivetune.innertube.models.BrowseEndpoint
 import moe.rukamori.archivetune.innertube.models.EpisodeItem
 import moe.rukamori.archivetune.innertube.models.GridRenderer
-import moe.rukamori.archivetune.innertube.models.MediaInfo
 import moe.rukamori.archivetune.innertube.models.MusicCarouselShelfRenderer
 import moe.rukamori.archivetune.innertube.models.MusicPlaylistShelfRenderer
 import moe.rukamori.archivetune.innertube.models.MusicResponsiveListItemRenderer
@@ -2704,12 +2703,6 @@ object YouTube {
     private fun String.normalizeAccountChannelDataSyncId(): String? {
         return PlaybackAuthState(dataSyncId = this).normalized().dataSyncId
     }
-
-    suspend fun getMediaInfo(videoId: String): Result<MediaInfo> = innerTube.getMediaInfo(videoId)
-
-    suspend fun getMediaMetadata(videoId: String): MediaInfo = innerTube.getMediaMetadata(videoId)
-
-    suspend fun getMediaStatistics(videoId: String) = innerTube.getMediaStatistics(videoId)
 
     @JvmInline
     value class SearchFilter(

@@ -516,7 +516,6 @@ public fun PlaylistMenu(
     val configuration = LocalConfiguration.current
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     val dividerModifier = Modifier.padding(start = 56.dp)
-    val startRadioText = stringResource(R.string.start_radio)
     val playText = stringResource(R.string.play)
     val shuffleText = stringResource(R.string.shuffle)
     val playNextText = stringResource(R.string.play_next)
@@ -633,36 +632,6 @@ public fun PlaylistMenu(
         item {
             MenuSurfaceSection(modifier = Modifier.padding(vertical = 6.dp)) {
                 Column {
-                    playlist.playlist.browseId?.let { browseId ->
-                        ListItem(
-                            headlineContent = { Text(text = startRadioText) },
-                            leadingContent = {
-                                Icon(
-                                    painter = painterResource(R.drawable.radio),
-                                    contentDescription = null,
-                                )
-                            },
-                            modifier =
-                                Modifier.clickable {
-                                    coroutineScope.launch(Dispatchers.IO) {
-                                        YouTube.playlist(browseId).getOrNull()?.playlist?.let { playlistItem ->
-                                            playlistItem.radioEndpoint?.let { radioEndpoint ->
-                                                withContext(Dispatchers.Main) {
-                                                    playerConnection.playQueue(YouTubeQueue(radioEndpoint))
-                                                }
-                                            }
-                                        }
-                                    }
-                                    onDismiss()
-                                },
-                            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                        )
-
-                        HorizontalDivider(
-                            modifier = dividerModifier,
-                            color = MaterialTheme.colorScheme.outlineVariant,
-                        )
-                    }
 
                     ListItem(
                         headlineContent = { Text(text = playNextText) },

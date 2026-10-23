@@ -31,11 +31,13 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@0b6dd653ba04f4f93bf581ec31e66cbd7dcb644d # v4
 
-      - name: Build APK
+      # Compile only (no shrinking or packaging), so a check takes a few minutes instead of ~11.
+      # --continue reports errors from every module in one run.
+      - name: Compile
         run: |
           chmod +x gradlew
           set -o pipefail
-          ./gradlew assembleFossMobileArm64Release --stacktrace 2>&1 | tee build.log
+          ./gradlew :app:compileFossMobileArm64ReleaseKotlin --continue --stacktrace 2>&1 | tee build.log
         env:
           PULL_REQUEST: 'false'
           GITHUB_EVENT_NAME: ${{ github.event_name }}

@@ -1200,12 +1200,6 @@ private fun ArtistPrimaryActions(
         onToggleAdd = onToggleSubscription,
         additionalActions = { actionColor ->
             onRadio?.let { radio ->
-                MediaDetailIconAction(
-                    icon = R.drawable.radio,
-                    contentDescription = R.string.start_radio,
-                    contentColor = actionColor,
-                    onClick = radio,
-                )
             }
         },
         modifier = modifier,

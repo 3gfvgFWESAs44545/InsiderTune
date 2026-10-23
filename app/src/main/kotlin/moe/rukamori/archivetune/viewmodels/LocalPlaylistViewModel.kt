@@ -154,12 +154,7 @@ class LocalPlaylistViewModel
             }
         }
 
-        private val _viewCounts = MutableStateFlow<Map<String, Int>>(emptyMap())
-        val viewCounts = _viewCounts.asStateFlow()
 
-        private val viewCountsMutex = Mutex()
-        private val viewCountsInFlight = mutableSetOf<String>()
-        private val viewCountsSemaphore = Semaphore(permits = 4)
 
         // Playlist Suggestions State
         private val _playlistSuggestions = MutableStateFlow<PlaylistSuggestion?>(null)
@@ -214,18 +209,6 @@ class LocalPlaylistViewModel
                 }
             }
 
-            viewModelScope.launch {
-                playlistSongs.collect { songs ->
-                    prefetchViewCounts(
-                        songs
-                            .asSequence()
-                            .filter { !it.song.song.isLocal }
-                            .map { it.song.id }
-                            .toList(),
-                    )
-                }
-            }
-
             // Auto-load suggestions when playlist or songs change
             viewModelScope.launch {
                 combine(playlist, playlistSongs) { playlist, songs ->
@@ -234,43 +217,6 @@ class LocalPlaylistViewModel
                     playlist?.let {
                         loadPlaylistSuggestions()
                     }
-                }
-            }
-        }
-
-        private fun prefetchViewCounts(videoIds: List<String>) {
-            val uniqueIds = videoIds.distinct().filter { it.isNotBlank() }
-            if (uniqueIds.isEmpty()) return
-
-            viewModelScope.launch(Dispatchers.IO) {
-                coroutineScope {
-                    uniqueIds
-                        .map { videoId ->
-                            async {
-                                val shouldFetch =
-                                    viewCountsMutex.withLock {
-                                        if (_viewCounts.value.containsKey(videoId) || viewCountsInFlight.contains(videoId)) {
-                                            false
-                                        } else {
-                                            viewCountsInFlight.add(videoId)
-                                            true
-                                        }
-                                    }
-
-                                if (!shouldFetch) return@async
-
-                                try {
-                                    viewCountsSemaphore.withPermit {
-                                        val count = YouTube.getMediaInfo(videoId).getOrNull()?.viewCount
-                                        if (count != null && count >= 0) {
-                                            _viewCounts.update { current -> current + (videoId to count) }
-                                        }
-                                    }
-                                } finally {
-                                    viewCountsMutex.withLock { viewCountsInFlight.remove(videoId) }
-                                }
-                            }
-                        }.awaitAll()
                 }
             }
         }

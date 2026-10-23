@@ -167,7 +167,6 @@ import moe.rukamori.archivetune.constants.MaxSongCacheSizeKey
 import moe.rukamori.archivetune.constants.MediaSessionConstants.CommandToggleLike
 import moe.rukamori.archivetune.constants.MediaSessionConstants.CommandToggleRepeatMode
 import moe.rukamori.archivetune.constants.MediaSessionConstants.CommandToggleShuffle
-import moe.rukamori.archivetune.constants.MediaSessionConstants.CommandToggleStartRadio
 import moe.rukamori.archivetune.constants.PauseListenHistoryKey
 import moe.rukamori.archivetune.constants.PauseOnDeviceMuteKey
 import moe.rukamori.archivetune.constants.PermanentShuffleKey
@@ -1210,7 +1209,6 @@ class MusicService :
 
         mediaLibrarySessionCallback.apply {
             toggleLike = ::toggleLike
-            toggleStartRadio = ::toggleStartRadio
             toggleLibrary = ::toggleLibrary
             carMediaButtonPreferences = ::buildAndroidAutoButtons
         }
@@ -3210,13 +3208,6 @@ class MusicService :
                         ).setIconResId(if (player.shuffleModeEnabled) R.drawable.shuffle_on else R.drawable.shuffle)
                         .setSessionCommand(CommandToggleShuffle)
                         .build(),
-                    CommandButton
-                        .Builder()
-                        .setDisplayName(getString(R.string.start_radio))
-                        .setIconResId(R.drawable.radio)
-                        .setSessionCommand(CommandToggleStartRadio)
-                        .setEnabled(currentSong.value != null && currentMediaMetadata.value?.isPodcast != true)
-                        .build(),
                 )
             mediaSession.setCustomLayout(customLayout)
             updateAndroidAutoButtons()
@@ -3252,12 +3243,6 @@ class MusicService :
                         )
                         .setSessionCommand(CommandToggleLike)
                         .setEnabled(currentSong.value != null)
-                        .build()
-                    AndroidAutoCustomAction.START_RADIO -> CommandButton.Builder()
-                        .setDisplayName(getString(R.string.start_radio))
-                        .setIconResId(R.drawable.radio)
-                        .setSessionCommand(CommandToggleStartRadio)
-                        .setEnabled(currentSong.value != null && currentMediaMetadata.value?.isPodcast != true)
                         .build()
                     AndroidAutoCustomAction.SHUFFLE -> CommandButton.Builder()
                         .setDisplayName(
@@ -3568,65 +3553,6 @@ class MusicService :
             }.toIntArray()
 
         return DefaultShuffleOrder(shuffledIndices, System.currentTimeMillis())
-    }
-
-    fun startRadioSeamlessly() {
-        val joined = togetherSessionState.value as? moe.rukamori.archivetune.together.TogetherSessionState.Joined
-        if (!isTogetherApplyingRemote() && joined?.role is moe.rukamori.archivetune.together.TogetherRole.Guest) {
-            if (!joined.roomState.settings.allowGuestsToControlPlayback) {
-                showTogetherNotice(getString(R.string.not_allowed), key = "GUEST_RADIO_DISABLED")
-                return
-            }
-            showTogetherNotice(getString(R.string.not_allowed), key = "GUEST_RADIO_UNSUPPORTED")
-            return
-        }
-        cancelInfiniteQueueBootstrap()
-        suppressAutoPlayback = false
-        val currentMediaMetadata = player.currentMetadata ?: return
-
-        val currentIndex = player.currentMediaItemIndex
-        val currentMediaId = currentMediaMetadata.id
-        if (currentSong.value?.song?.isLocal == true || currentMediaId.isLocalMediaId()) {
-            return
-        }
-
-        scope.launch(SilentHandler) {
-            val radioQueue =
-                YouTubeQueue(
-                    endpoint = WatchEndpoint(videoId = currentMediaId),
-                    followAutomixPreview = true,
-                )
-            val initialStatus =
-                withContext(Dispatchers.IO) {
-                    radioQueue
-                        .getInitialStatus()
-                        .filterPlaybackContent(
-                            hideExplicit = dataStore.get(HideExplicitKey, false),
-                            hideVideo = dataStore.get(HideVideoKey, false),
-                        )
-                }
-
-            if (initialStatus.title != null) {
-                queueTitle = initialStatus.title
-            }
-
-            val radioItems =
-                initialStatus.items.filter { item ->
-                    item.mediaId != currentMediaId
-                }
-
-            if (radioItems.isNotEmpty()) {
-                val itemCount = player.mediaItemCount
-
-                if (itemCount > currentIndex + 1) {
-                    player.removeMediaItems(currentIndex + 1, itemCount)
-                }
-
-                player.addMediaItems(currentIndex + 1, radioItems)
-            }
-
-            currentQueue = radioQueue
-        }
     }
 
     fun clearAutomix() {
@@ -5446,10 +5372,6 @@ class MusicService :
                 reportException(error)
             }
         }
-    }
-
-    fun toggleStartRadio() {
-        startRadioSeamlessly()
     }
 
     private fun decodeBandLevelsMb(raw: String?): List<Int> {

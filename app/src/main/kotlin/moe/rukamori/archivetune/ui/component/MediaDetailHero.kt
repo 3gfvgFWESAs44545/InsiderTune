@@ -78,6 +78,8 @@ public fun MediaDetailHero(
     onPlay: (() -> Unit)?,
     onToggleAdd: (() -> Unit)?,
     modifier: Modifier = Modifier,
+    /** Pixel Notes: show the add button as a like heart that toggles straight away. */
+    likeStyle: Boolean = false,
     subtitle: AnnotatedString? = null,
     metadata: String? = null,
     description: String? = null,
@@ -211,6 +213,7 @@ public fun MediaDetailHero(
 
             MediaDetailPrimaryActions(
                 isAdded = isAdded,
+                likeStyle = likeStyle,
                 contentColor = heroContentColor,
                 contrastingColor = surfaceColor,
                 addContentDescription = addContentDescription,
@@ -218,9 +221,9 @@ public fun MediaDetailHero(
                 onShuffle = onShuffle,
                 onPlay = onPlay,
                 onToggleAdd =
-                    remember(isAdded, menuState, onToggleAdd, removeContentDescription, title) {
+                    remember(isAdded, menuState, onToggleAdd, removeContentDescription, title, likeStyle) {
                         onToggleAdd?.let { toggleAdd ->
-                            if (isAdded) {
+                            if (isAdded && !likeStyle) {
                                 {
                                     menuState.showDialog {
                                         MediaDetailRemovalConfirmationDialog(
@@ -288,6 +291,7 @@ private fun MediaDetailRemovalConfirmationDialog(
 @Composable
 public fun MediaDetailPrimaryActions(
     isAdded: Boolean,
+    likeStyle: Boolean = false,
     contentColor: Color,
     contrastingColor: Color,
     @StringRes addContentDescription: Int,
@@ -398,7 +402,15 @@ public fun MediaDetailPrimaryActions(
                                 .size(MediaDetailSecondaryActionSize),
                     ) {
                         Icon(
-                            painter = painterResource(if (isAdded) R.drawable.done else R.drawable.add),
+                            painter =
+                                painterResource(
+                                    when {
+                                        likeStyle && isAdded -> R.drawable.favorite
+                                        likeStyle -> R.drawable.favorite_border
+                                        isAdded -> R.drawable.done
+                                        else -> R.drawable.add
+                                    },
+                                ),
                             contentDescription =
                                 stringResource(
                                     if (isAdded) removeContentDescription else addContentDescription,

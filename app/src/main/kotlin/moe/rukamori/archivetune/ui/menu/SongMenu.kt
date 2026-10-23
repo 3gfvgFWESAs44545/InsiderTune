@@ -435,7 +435,6 @@ fun SongMenu(
     val bottomSheetPageState = LocalBottomSheetPageState.current
     val isLocalSong = song.song.isLocal
 
-    val startRadioText = stringResource(R.string.start_radio)
     val playNextText = stringResource(R.string.play_next)
     val addToQueueText = stringResource(R.string.add_to_queue)
     val addToPlaylistText = stringResource(R.string.add_to_playlist)
@@ -445,7 +444,6 @@ fun SongMenu(
     val primaryActions =
         remember(
             song,
-            startRadioText,
             playNextText,
             addToQueueText,
             addToPlaylistText,
@@ -456,25 +454,6 @@ fun SongMenu(
             playerConnection,
         ) {
             buildList {
-                if (!isLocalSong) {
-                    add(
-                        NewAction(
-                            icon = {
-                                Icon(
-                                    painter = painterResource(R.drawable.radio),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(28.dp),
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
-                            },
-                            text = startRadioText,
-                            onClick = {
-                                onDismiss()
-                                playerConnection.playQueue(YouTubeQueue.radio(song.toMediaMetadata()))
-                            },
-                        ),
-                    )
-                }
                 add(
                     NewAction(
                         icon = {

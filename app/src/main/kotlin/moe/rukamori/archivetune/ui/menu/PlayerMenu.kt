@@ -480,25 +480,6 @@ fun PlayerMenu(
                                     ),
                                 )
                             }
-                            if (!isLocalMedia && !mediaMetadata.isPodcast) {
-                                add(
-                                    NewAction(
-                                        icon = {
-                                            Icon(
-                                                painter = painterResource(R.drawable.radio),
-                                                contentDescription = null,
-                                                modifier = Modifier.size(28.dp),
-                                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            )
-                                        },
-                                        text = stringResource(R.string.start_radio),
-                                        onClick = {
-                                            playerConnection.startRadioSeamlessly()
-                                            onDismiss()
-                                        },
-                                    ),
-                                )
-                            }
                             if (
                                 !isLocalMedia &&
                                 isQueueTrigger != true &&

@@ -91,7 +91,6 @@ class MediaLibrarySessionCallback
         private var pendingSearchJob: Job? = null
         private val onlineSearchItemCache = ConcurrentHashMap<String, MediaItem>()
         var toggleLike: () -> Unit = {}
-        var toggleStartRadio: () -> Unit = {}
         var toggleLibrary: () -> Unit = {}
         var carMediaButtonPreferences: (AndroidAutoConfiguration) -> List<CommandButton> = { emptyList() }
 
@@ -136,7 +135,6 @@ class MediaLibrarySessionCallback
             val availableSessionCommands = defaults.availableSessionCommands
                 .buildUpon()
                 .add(MediaSessionConstants.CommandToggleLike)
-                .add(MediaSessionConstants.CommandToggleStartRadio)
                 .add(MediaSessionConstants.CommandToggleLibrary)
                 .add(MediaSessionConstants.CommandToggleShuffle)
                 .add(MediaSessionConstants.CommandToggleRepeatMode)
@@ -223,10 +221,6 @@ class MediaLibrarySessionCallback
                     true
                 }
 
-                MediaSessionConstants.ACTION_TOGGLE_START_RADIO -> {
-                    toggleStartRadio()
-                    true
-                }
 
                 MediaSessionConstants.ACTION_TOGGLE_LIBRARY -> {
                     toggleLibrary()

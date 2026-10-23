@@ -299,8 +299,9 @@ fun AlbumScreen(
                         subtitle = artistNames,
                         metadata = metadata,
                         isAdded = isBookmarked,
-                        addContentDescription = R.string.add_to_library,
-                        removeContentDescription = R.string.remove_from_library,
+                        likeStyle = true,
+                        addContentDescription = R.string.action_like,
+                        removeContentDescription = R.string.action_remove_like,
                         onShuffle =
                             if (albumWithSongs.songs.isEmpty()) {
                                 null
@@ -749,30 +750,6 @@ fun AlbumScreen(
                             painter = painterResource(R.drawable.more_vert),
                             contentDescription = null,
                         )
-                    }
-                } else {
-                    albumWithSongs?.let { currentAlbum ->
-                        IconButton(
-                            onClick = {
-                                menuState.show {
-                                    AlbumMenu(
-                                        originalAlbum =
-                                            Album(
-                                                currentAlbum.album,
-                                                currentAlbum.artists,
-                                            ),
-                                        navController = navController,
-                                        onDismiss = menuState::dismiss,
-                                    )
-                                }
-                            },
-                            onLongClick = {},
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.more_horiz),
-                                contentDescription = stringResource(R.string.more_options),
-                            )
-                        }
                     }
                 }
             },

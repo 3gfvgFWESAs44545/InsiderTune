@@ -1146,4 +1146,10 @@
     <string name="backup_password_too_short">Use at least 8 characters</string>
     <string name="backup_password_mismatch">Passwords don\'t match</string>
     <string name="backup_password_show">Show password</string>
+    <string name="media_info_album">Album</string>
+    <string name="media_info_track">Track</string>
+    <string name="media_info_year">Year</string>
+    <string name="media_info_format">Format</string>
+    <string name="media_info_audio">Audio</string>
+    <string name="open_on_khinsider">Open on khinsider</string>
 </resources>

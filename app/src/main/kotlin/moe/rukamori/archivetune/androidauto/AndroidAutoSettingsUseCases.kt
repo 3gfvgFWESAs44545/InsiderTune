@@ -57,7 +57,7 @@ class AndroidAutoSettingsUseCases @Inject constructor(
             slot == AndroidAutoActionSlot.PRIMARY -> action
             action != current.primaryAction -> current.primaryAction
             current.secondaryAction != AndroidAutoCustomAction.NONE -> current.secondaryAction
-            action != AndroidAutoCustomAction.START_RADIO -> AndroidAutoCustomAction.START_RADIO
+            action != AndroidAutoCustomAction.SHUFFLE -> AndroidAutoCustomAction.SHUFFLE
             else -> AndroidAutoCustomAction.LIKE
         }
         val secondary = when {

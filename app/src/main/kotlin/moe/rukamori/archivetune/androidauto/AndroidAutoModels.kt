@@ -11,7 +11,6 @@ import androidx.compose.runtime.Immutable
 
 enum class AndroidAutoCustomAction {
     LIKE,
-    START_RADIO,
     SHUFFLE,
     REPEAT,
     NONE,
@@ -35,7 +34,7 @@ data class AndroidAutoConfiguration(
     val meteredPlayback: Boolean = true,
     val meteredArtwork: Boolean = true,
     val primaryAction: AndroidAutoCustomAction = AndroidAutoCustomAction.LIKE,
-    val secondaryAction: AndroidAutoCustomAction = AndroidAutoCustomAction.START_RADIO,
+    val secondaryAction: AndroidAutoCustomAction = AndroidAutoCustomAction.SHUFFLE,
 )
 
 @Immutable

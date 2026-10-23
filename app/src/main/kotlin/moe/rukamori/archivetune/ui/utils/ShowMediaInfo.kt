@@ -80,13 +80,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import coil3.compose.AsyncImage
 import com.google.common.collect.ImmutableList
 import kotlinx.coroutines.awaitCancellation
-import moe.rukamori.archivetune.LocalPlayerConnection
 import moe.rukamori.archivetune.R
 import moe.rukamori.archivetune.mediainfo.MediaInfoDetail
 import moe.rukamori.archivetune.mediainfo.MediaInfoEvent
-import moe.rukamori.archivetune.mediainfo.MediaInfoMetric
 import moe.rukamori.archivetune.mediainfo.MediaInfoState
-import moe.rukamori.archivetune.mediainfo.MediaInfoTab
 import moe.rukamori.archivetune.mediainfo.MediaInfoUiModel
 import moe.rukamori.archivetune.ui.component.LocalBottomSheetPageState
 import moe.rukamori.archivetune.viewmodels.MediaInfoViewModel
@@ -96,14 +93,12 @@ fun ShowMediaInfo(videoId: String) {
     val viewModel: MediaInfoViewModel = hiltViewModel()
     val context = LocalContext.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
-    val playerConnection = LocalPlayerConnection.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
     val currentState = state
 
     LaunchedEffect(videoId, viewModel) {
-        viewModel.open(videoId, playerConnection?.player?.volume)
+        viewModel.open(videoId)
         try {
             awaitCancellation()
         } finally {
@@ -115,7 +110,8 @@ fun ShowMediaInfo(videoId: String) {
             viewModel.events.collect { event ->
                 when (event) {
                     is MediaInfoEvent.Copy -> copyToClipboard(context, event.value)
-                    is MediaInfoEvent.Share -> shareMediaLink(context, event.url)
+                    is MediaInfoEvent.Share -> shareMediaLink(context, event.text)
+                    is MediaInfoEvent.Open -> openInBrowser(context, event.url)
                     MediaInfoEvent.Close -> bottomSheetPageState.dismiss()
                 }
             }
@@ -127,11 +123,9 @@ fun ShowMediaInfo(videoId: String) {
         } else {
             currentState
         },
-        selectedTab = selectedTab,
-        onSelectTab = remember(viewModel) { viewModel::selectTab },
         onCopy = remember(viewModel) { viewModel::copy },
-        onCopyId = remember(viewModel) { viewModel::copyId },
         onShare = remember(viewModel) { viewModel::share },
+        onOpen = remember(viewModel) { viewModel::openOnWeb },
         onClose = remember(viewModel) { viewModel::close },
     )
 }
@@ -139,11 +133,9 @@ fun ShowMediaInfo(videoId: String) {
 @Composable
 private fun MediaInfoContent(
     state: MediaInfoState<MediaInfoUiModel>,
-    selectedTab: MediaInfoTab,
-    onSelectTab: (MediaInfoTab) -> Unit,
     onCopy: (String) -> Unit,
-    onCopyId: () -> Unit,
     onShare: () -> Unit,
+    onOpen: () -> Unit,
     onClose: () -> Unit,
 ) {
     val model = (state as? MediaInfoState.Success)?.data
@@ -152,18 +144,11 @@ private fun MediaInfoContent(
         return
     }
     val unknownText = stringResource(R.string.unknown)
-    val pleaseWaitText = stringResource(R.string.please_wait)
     val copyText = stringResource(R.string.copy)
     val shareText = stringResource(R.string.share)
     val closeText = stringResource(R.string.close)
-    val descriptionLabel = stringResource(R.string.description)
-    val detailsLabel = stringResource(R.string.details)
-    val numbersLabel = stringResource(R.string.numbers)
     val informationLabel = stringResource(R.string.information)
-    val description = (model.descriptionState as? MediaInfoState.Success)?.data
-    val onCopyDescription: () -> Unit = remember(onCopy, description) {
-        { description?.let(onCopy) }
-    }
+    val audioLabel = stringResource(R.string.media_info_audio)
 
     LazyColumn(
         state = rememberLazyListState(),
@@ -177,8 +162,6 @@ private fun MediaInfoContent(
                 subtitle = model.subtitle ?: unknownText,
                 artworkModel = model.artwork,
                 sectionLabel = informationLabel,
-                isLoading = model.metadata is MediaInfoState.Loading,
-                loadingText = pleaseWaitText,
                 closeText = closeText,
                 onClose = onClose,
             )
@@ -190,18 +173,6 @@ private fun MediaInfoContent(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 FilledTonalButton(
-                    onClick = onCopyId,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.copy),
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(text = copyText)
-                }
-
-                OutlinedButton(
                     onClick = onShare,
                     modifier = Modifier.weight(1f),
                 ) {
@@ -212,73 +183,19 @@ private fun MediaInfoContent(
                     Spacer(Modifier.width(8.dp))
                     Text(text = shareText)
                 }
-            }
-        }
 
-        if (model.quickFacts.isNotEmpty()) {
-            item(key = "QuickFacts", contentType = "QuickFacts") {
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    model.quickFacts.forEach { fact ->
-                        AssistChip(
-                            onClick = remember(onCopy, fact.text) { { onCopy(fact.text) } },
-                            label = {
-                                Text(
-                                    text = fact.text,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(fact.iconRes),
-                                    contentDescription = null,
-                                )
-                            },
-                            colors =
-                                AssistChipDefaults.assistChipColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                    labelColor = MaterialTheme.colorScheme.onSurface,
-                                ),
-                        )
-                    }
-                }
-            }
-        }
-
-        item(key = "Tabs", contentType = "Tabs") {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                MediaInfoTab.entries.forEachIndexed { index, tab ->
-                    val checked = selectedTab == tab
-                    ToggleButton(
-                        checked = checked,
-                        onCheckedChange = remember(onSelectTab, tab) { { onSelectTab(tab) } },
-                        modifier =
-                            Modifier
-                                .weight(1f)
-                                .height(52.dp),
-                        shapes =
-                            when (index) {
-                                0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                                MediaInfoTab.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
-                                else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                            },
-                        colors =
-                            ToggleButtonDefaults.colors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                checkedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                                checkedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                            ),
+                if (model.webUrl != null) {
+                    OutlinedButton(
+                        onClick = onOpen,
+                        modifier = Modifier.weight(1f),
                     ) {
+                        Icon(
+                            painter = painterResource(R.drawable.kh_ic_open_in_new),
+                            contentDescription = null,
+                        )
+                        Spacer(Modifier.width(8.dp))
                         Text(
-                            text = stringResource(tab.labelRes),
+                            text = stringResource(R.string.open_on_khinsider),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
@@ -287,65 +204,40 @@ private fun MediaInfoContent(
             }
         }
 
-        item(key = "SelectedContent", contentType = "SelectedContent") {
-            AnimatedContent(
-                targetState = selectedTab,
-                transitionSpec = { fadeIn() togetherWith fadeOut() },
-                label = "mediaInfoTab",
-            ) { tab ->
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .animateContentSize(),
-                ) {
-                    when (tab) {
-                        MediaInfoTab.Information -> {
-                            MediaInfoDetailCard(
-                                items = model.overview,
-                                copyContentDescription = copyText,
-                                onCopy = onCopy,
-                            )
+        item(key = "Overview", contentType = "Details") {
+            Column {
+                MediaInfoSectionTitle(informationLabel)
+                MediaInfoDetailCard(
+                    items = model.overview,
+                    copyContentDescription = copyText,
+                    onCopy = onCopy,
+                )
+            }
+        }
 
-                            if (description != null) {
-                                MediaInfoNarrativeCard(
-                                    title = descriptionLabel,
-                                    body = description,
-                                    copyText = copyText,
-                                    onCopy = onCopyDescription,
-                                )
-                            } else {
-                                MediaInfoStatusCard(
-                                    title = descriptionLabel,
-                                    state = model.descriptionState,
-                                )
-                            }
-                        }
-
-                        MediaInfoTab.Details -> {
-                            when (val details = model.technicalDetails) {
-                                is MediaInfoState.Success -> MediaInfoDetailCard(
-                                    items = details.data,
-                                    copyContentDescription = copyText,
-                                    onCopy = onCopy,
-                                )
-                                else -> MediaInfoStatusCard(title = detailsLabel, state = details)
-                            }
-                        }
-
-                        MediaInfoTab.Numbers -> {
-                            if (model.statistics is MediaInfoState.Success) {
-                                MediaInfoMetricsGrid(metrics = model.metrics)
-                            } else {
-                                MediaInfoStatusCard(title = numbersLabel, state = model.statistics)
-                            }
-                        }
-                    }
+        if (model.audio.isNotEmpty()) {
+            item(key = "Audio", contentType = "Details") {
+                Column {
+                    MediaInfoSectionTitle(audioLabel)
+                    MediaInfoDetailCard(
+                        items = model.audio,
+                        copyContentDescription = copyText,
+                        onCopy = onCopy,
+                    )
                 }
             }
         }
     }
+}
+
+@Composable
+private fun MediaInfoSectionTitle(text: String) {
+    Text(
+        text = text,
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+        modifier = Modifier.padding(start = 4.dp, bottom = 8.dp),
+    )
 }
 
 @Composable
@@ -354,8 +246,6 @@ private fun MediaInfoHeroCard(
     subtitle: String,
     artworkModel: String?,
     sectionLabel: String,
-    isLoading: Boolean,
-    loadingText: String,
     closeText: String,
     onClose: () -> Unit,
 ) {
@@ -435,21 +325,6 @@ private fun MediaInfoHeroCard(
                     overflow = TextOverflow.Ellipsis,
                 )
 
-                if (isLoading) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        CircularWavyProgressIndicator(
-                            modifier = Modifier.size(20.dp),
-                        )
-                        Text(
-                            text = loadingText,
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
             }
 
             IconButton(onClick = onClose) {
@@ -512,104 +387,6 @@ private fun MediaInfoDetailCard(
 }
 
 @Composable
-private fun MediaInfoNarrativeCard(
-    title: String,
-    body: String,
-    copyText: String,
-    onCopy: () -> Unit,
-) {
-    ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
-        colors =
-            CardDefaults.elevatedCardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-            ),
-    ) {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                OutlinedButton(onClick = onCopy) {
-                    Icon(
-                        painter = painterResource(R.drawable.copy),
-                        contentDescription = null,
-                    )
-                    Spacer(Modifier.width(8.dp))
-                    Text(text = copyText)
-                }
-            }
-
-            Text(
-                text = body,
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
-    }
-}
-
-@Composable
-private fun MediaInfoMetricsGrid(metrics: ImmutableList<MediaInfoMetric>) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        remember(metrics) { metrics.chunked(2) }.forEach { rowMetrics ->
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                rowMetrics.forEach { metric ->
-                    ElevatedCard(
-                        modifier = Modifier.weight(1f),
-                        colors =
-                            CardDefaults.elevatedCardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-                            ),
-                    ) {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            modifier =
-                                Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                        ) {
-                            Text(
-                                text = stringResource(metric.labelRes),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
-                            Text(
-                                text = metric.value ?: stringResource(R.string.unknown),
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.SemiBold,
-                            )
-                        }
-                    }
-                }
-
-                if (rowMetrics.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun MediaInfoStatusCard(
     title: String,
     state: MediaInfoState<*>,
@@ -660,6 +437,17 @@ private fun copyToClipboard(
     val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     clipboardManager.setPrimaryClip(ClipData.newPlainText("text", value))
     Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
+}
+
+private fun openInBrowser(
+    context: Context,
+    url: String,
+) {
+    runCatching {
+        context.startActivity(
+            Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+        )
+    }
 }
 
 private fun shareMediaLink(

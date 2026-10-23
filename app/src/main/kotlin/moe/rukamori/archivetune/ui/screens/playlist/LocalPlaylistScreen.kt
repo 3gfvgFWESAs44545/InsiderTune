@@ -161,7 +161,6 @@ fun LocalPlaylistScreen(
 
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs by viewModel.playlistSongs.collectAsStateWithLifecycle()
-    val viewCounts by viewModel.viewCounts.collectAsStateWithLifecycle()
     val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
     val coverState by viewModel.coverState.collectAsStateWithLifecycle()
     val mutableSongs = remember { mutableStateListOf<PlaylistSong>() }
@@ -764,34 +763,6 @@ fun LocalPlaylistScreen(
                                             },
                                         )
 
-                                        MediaDetailIconAction(
-                                            icon = R.drawable.radio,
-                                            contentDescription = R.string.start_radio,
-                                            contentColor = contentColor,
-                                            onClick = {
-                                                val browseId = playlist.playlist.browseId
-                                                if (browseId != null) {
-                                                    playerConnection.playQueue(
-                                                        YouTubeQueue(
-                                                            WatchEndpoint(
-                                                                playlistId = "RDAMPL$browseId",
-                                                                params =
-                                                                    playlist.playlist
-                                                                        .radioEndpointParams,
-                                                            ),
-                                                        ),
-                                                    )
-                                                } else {
-                                                    playerConnection.playQueue(
-                                                        LocalMixQueue(
-                                                            database = database,
-                                                            playlistId = playlist.id,
-                                                            maxMixSize = 50,
-                                                        ),
-                                                    )
-                                                }
-                                            },
-                                        )
                                     }
 
                                     if (editable) {
@@ -915,8 +886,6 @@ fun LocalPlaylistScreen(
                             SongListItem(
                                 song = song.song,
                                 showSourceIcon = true,
-                                viewCountText =
-                                    viewCounts[song.song.id]?.let { count -> formatCompactCount(count.toLong()) },
                                 isActive = song.song.id == mediaMetadata?.id,
                                 isPlaying = isPlaying,
                                 showInLibraryIcon = true,
@@ -1023,8 +992,6 @@ fun LocalPlaylistScreen(
                             SongListItem(
                                 song = song.song,
                                 showSourceIcon = true,
-                                viewCountText =
-                                    viewCounts[song.song.id]?.let { count -> formatCompactCount(count.toLong()) },
                                 isActive = song.song.id == mediaMetadata?.id,
                                 isPlaying = isPlaying,
                                 showInLibraryIcon = true,

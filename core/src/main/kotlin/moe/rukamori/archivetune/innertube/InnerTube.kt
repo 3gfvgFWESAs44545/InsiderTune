@@ -22,8 +22,6 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import moe.rukamori.archivetune.innertube.models.Context
-import moe.rukamori.archivetune.innertube.models.MediaInfo
-import moe.rukamori.archivetune.innertube.models.ReturnYouTubeDislikeResponse
 import moe.rukamori.archivetune.innertube.models.YouTubeClient
 import moe.rukamori.archivetune.innertube.models.YouTubeLocale
 import moe.rukamori.archivetune.innertube.models.body.*
@@ -894,108 +892,4 @@ class InnerTube {
         }
     }
 
-    suspend fun getMediaStatistics(videoId: String): ReturnYouTubeDislikeResponse =
-        httpClient.get("https://returnyoutubedislikeapi.com/Votes") {
-            parameter("videoId", videoId)
-            contentType(ContentType.Application.Json)
-        }.body()
-
-    suspend fun getMediaInfo(videoId: String): Result<MediaInfo> =
-        try {
-            val metadata = getMediaMetadata(videoId)
-            val statistics = getMediaStatistics(videoId)
-            Result.success(
-                metadata.copy(
-                    viewCount = statistics.viewCount,
-                    like = statistics.likes,
-                    dislike = statistics.dislikes,
-                ),
-            )
-        } catch (exception: CancellationException) {
-            throw exception
-        } catch (exception: Exception) {
-            Result.failure(exception)
-        }
-
-    suspend fun getMediaMetadata(videoId: String): MediaInfo {
-        val client = YouTubeClient.WEB
-        val authState = currentAuthState()
-        val response = httpClient.post(client.requestApiUrl("next")) {
-            ytClient(client, setLogin = true, authState = authState)
-            setBody(
-                NextBody(
-                    context = client.toContext(locale, authState.visitorData, authState.dataSyncId),
-                    videoId = videoId,
-                    playlistId = null,
-                    playlistSetVideoId = null,
-                    index = null,
-                    params = null,
-                    continuation = null,
-                ),
-            )
-        }.body<NextResponse>()
-
-        val baseForInfo =
-            response.contents.twoColumnWatchNextResults
-                ?.results
-                ?.results
-                ?.content
-                ?.find {
-                    it?.videoSecondaryInfoRenderer != null
-                }?.videoSecondaryInfoRenderer
-
-        val baseForTitle =
-            response.contents.twoColumnWatchNextResults
-                ?.results
-                ?.results
-                ?.content
-                ?.find {
-                    it?.videoPrimaryInfoRenderer != null
-                }?.videoPrimaryInfoRenderer
-
-        return MediaInfo(
-            videoId = videoId,
-            title =
-                baseForTitle
-                    ?.title
-                    ?.runs
-                    ?.firstOrNull()
-                    ?.text,
-            author =
-                baseForInfo
-                    ?.owner
-                    ?.videoOwnerRenderer
-                    ?.title
-                    ?.runs
-                    ?.firstOrNull()
-                    ?.text,
-            authorId =
-                baseForInfo
-                    ?.owner
-                    ?.videoOwnerRenderer
-                    ?.navigationEndpoint
-                    ?.browseEndpoint
-                    ?.browseId,
-            authorThumbnail =
-                baseForInfo
-                    ?.owner
-                    ?.videoOwnerRenderer
-                    ?.thumbnail
-                    ?.thumbnails
-                    ?.find {
-                        it.height == 48
-                    }?.url
-                    ?.replace("s48", "s960"),
-            description = baseForInfo?.attributedDescription?.content,
-            subscribers =
-                baseForInfo
-                    ?.owner
-                    ?.videoOwnerRenderer
-                    ?.subscriberCountText
-                    ?.simpleText
-                    ?.split(" ")
-                    ?.firstOrNull(),
-            uploadDate = baseForTitle?.dateText?.simpleText,
-        )
-    }
 }

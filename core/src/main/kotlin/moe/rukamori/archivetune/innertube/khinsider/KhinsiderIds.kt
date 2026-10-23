@@ -122,7 +122,7 @@ object KhinsiderIds {
     }
 
     /** Track number from a khinsider file name such as "03. Courtroom.mp3" or "1-03 Courtroom.mp3". */
-    private fun trackNumberFromFileName(songId: String): Int? {
+    fun trackNumberFromFileName(songId: String): Int? {
         val fileName = songPath(songId)?.substringAfterLast('/') ?: return null
         val decoded =
             runCatching {

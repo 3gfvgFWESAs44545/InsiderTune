@@ -146,7 +146,6 @@ fun OnlinePlaylistScreen(
 
     val playlist by viewModel.playlist.collectAsStateWithLifecycle()
     val songs by viewModel.playlistSongs.collectAsStateWithLifecycle()
-    val viewCounts by viewModel.viewCounts.collectAsStateWithLifecycle()
     val dbPlaylist by viewModel.dbPlaylist.collectAsStateWithLifecycle()
     val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
@@ -616,16 +615,6 @@ fun OnlinePlaylistScreen(
                                     }
 
                                     playlist.radioEndpoint?.let { radioEndpoint ->
-                                        MediaDetailIconAction(
-                                            icon = R.drawable.radio,
-                                            contentDescription = R.string.start_radio,
-                                            contentColor = contentColor,
-                                            onClick = {
-                                                playerConnection.playQueue(
-                                                    YouTubeQueue(radioEndpoint),
-                                                )
-                                            },
-                                        )
                                     }
                                 },
                                 modifier = Modifier.animateItem(),
@@ -653,10 +642,6 @@ fun OnlinePlaylistScreen(
                         YouTubeListItem(
                             item = song.item.second,
                             showSourceIcon = true,
-                            viewCountText =
-                                viewCounts[song.item.second.id]?.let { count ->
-                                    formatCompactCount(count.toLong())
-                                },
                             isActive = mediaMetadata?.id == song.item.second.id,
                             isPlaying = isPlaying,
                             isSelected = song.isSelected && selection,
