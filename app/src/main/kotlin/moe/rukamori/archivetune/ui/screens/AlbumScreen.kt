@@ -399,21 +399,29 @@ fun AlbumScreen(
                                     }
                                 }
 
+                                // Pixel Notes: album details and options (same menu as the top-right ⋯),
+                                // replacing ArchiveTune's shortcut to the download queue.
                                 MediaDetailAction(
-                                    contentDescription = R.string.download,
+                                    contentDescription = R.string.more_options,
                                     contentColor = contentColor,
                                     onClick = {
-                                        navController.navigate(
-                                            "auto_playlist/downloaded?tab=progress",
-                                        )
+                                        menuState.show {
+                                            AlbumMenu(
+                                                originalAlbum =
+                                                    Album(
+                                                        albumWithSongs.album,
+                                                        albumWithSongs.artists,
+                                                    ),
+                                                navController = navController,
+                                                onDismiss = menuState::dismiss,
+                                            )
+                                        }
                                     },
                                 ) {
-                                    val globalProgress = (globalDownloadState as? HeaderDownloadState.Partial)?.progress ?: 0f
-                                    val globalPaused = (globalDownloadState as? HeaderDownloadState.Partial)?.paused ?: false
-                                    HeaderDownloadProgressIndicator(
-                                        progress = globalProgress,
-                                        paused = globalPaused,
-                                        icon = R.drawable.list,
+                                    Icon(
+                                        painter = painterResource(R.drawable.info),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(22.dp),
                                     )
                                 }
                             }

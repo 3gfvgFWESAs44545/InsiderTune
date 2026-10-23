@@ -543,7 +543,7 @@ fun SongMenu(
                                     Intent().apply {
                                         action = Intent.ACTION_SEND
                                         type = "text/plain"
-                                        putExtra(Intent.EXTRA_TEXT, moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(song.id) ?: "https://music.youtube.com/watch?v=${song.id}")
+                                        putExtra(Intent.EXTRA_TEXT, moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(song.id, song.song.title, song.album?.title) ?: "https://music.youtube.com/watch?v=${song.id}")
                                     }
                                 context.startActivity(Intent.createChooser(intent, null))
                             }

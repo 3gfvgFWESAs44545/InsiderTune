@@ -341,7 +341,7 @@ fun PlayerTopActions(
                                         type = "text/plain"
                                         putExtra(
                                             Intent.EXTRA_TEXT,
-                                            moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(mediaMetadata.id) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                            moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(mediaMetadata.id, mediaMetadata.title, mediaMetadata.album?.title, mediaMetadata.trackNumber) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
                                         )
                                     }
                                 context.startActivity(Intent.createChooser(intent, null))
@@ -405,7 +405,7 @@ fun PlayerTopActions(
                                         type = "text/plain"
                                         putExtra(
                                             Intent.EXTRA_TEXT,
-                                            moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(mediaMetadata.id) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                            moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(mediaMetadata.id, mediaMetadata.title, mediaMetadata.album?.title, mediaMetadata.trackNumber) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
                                         )
                                     }
                                 context.startActivity(Intent.createChooser(intent, null))
@@ -462,7 +462,7 @@ fun PlayerTopActions(
                                 type = "text/plain"
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(mediaMetadata.id) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                    moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(mediaMetadata.id, mediaMetadata.title, mediaMetadata.album?.title, mediaMetadata.trackNumber) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
                                 )
                             }
                         context.startActivity(Intent.createChooser(intent, null))
@@ -572,7 +572,7 @@ fun PlayerTopActions(
                                     type = "text/plain"
                                     putExtra(
                                         Intent.EXTRA_TEXT,
-                                        moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(mediaMetadata.id) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                        moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(mediaMetadata.id, mediaMetadata.title, mediaMetadata.album?.title, mediaMetadata.trackNumber) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
                                     )
                                 }
                             context.startActivity(Intent.createChooser(intent, null))
@@ -637,7 +637,7 @@ fun PlayerTopActions(
                                 type = "text/plain"
                                 putExtra(
                                     Intent.EXTRA_TEXT,
-                                    moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.webUrl(mediaMetadata.id) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
+                                    moe.rukamori.archivetune.innertube.khinsider.KhinsiderIds.songShareText(mediaMetadata.id, mediaMetadata.title, mediaMetadata.album?.title, mediaMetadata.trackNumber) ?: "https://music.youtube.com/watch?v=${mediaMetadata.id}",
                                 )
                             }
                         context.startActivity(Intent.createChooser(intent, null))

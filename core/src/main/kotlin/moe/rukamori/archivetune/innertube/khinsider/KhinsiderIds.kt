@@ -84,17 +84,54 @@ object KhinsiderIds {
 
     /**
      * Pixel Notes: the khinsider web page for any khinsider id, for sharing and Discord buttons.
-     * Albums (and their album playlists) open the album page; songs open the track's page.
+     * Albums, album playlists and songs open the album page.
      */
     fun webUrl(id: String?): String? {
         if (id.isNullOrBlank()) return null
         val base = "https://downloads.khinsider.com"
         return when {
-            id.startsWith(SONG_PREFIX) -> songPath(id)?.let { "$base/game-soundtracks/album/$it" }
+            // Songs share their album's page; the track is named in the share text (songShareText).
+            id.startsWith(SONG_PREFIX) -> albumSlug(id)?.let { "$base/game-soundtracks/album/$it" }
             id.startsWith(CATEGORY_PREFIX) ->
                 KhinsiderCategory.fromKey(categoryKey(id))?.let { base + it.path }
             else -> albumSlug(id)?.let { "$base/game-soundtracks/album/$it" }
         }
+    }
+
+    /**
+     * Pixel Notes: text for sharing a khinsider song, naming the track and linking its album page:
+     * "Track 3: Courtroom — Bad Piggies (Original Game Soundtrack)" then the link.
+     * Returns null for non-khinsider ids.
+     */
+    fun songShareText(
+        id: String?,
+        title: String?,
+        albumTitle: String?,
+        trackNumber: Int? = null,
+    ): String? {
+        if (id.isNullOrBlank() || !id.startsWith(SONG_PREFIX)) return null
+        val link = webUrl(id) ?: return null
+        val number = trackNumber ?: trackNumberFromFileName(id)
+        val label =
+            buildString {
+                if (number != null) append("Track ").append(number).append(": ")
+                append(title?.takeIf { it.isNotBlank() } ?: "Song")
+                albumTitle?.takeIf { it.isNotBlank() }?.let { append(" — ").append(it) }
+            }
+        return "$label\n$link"
+    }
+
+    /** Track number from a khinsider file name such as "03. Courtroom.mp3" or "1-03 Courtroom.mp3". */
+    private fun trackNumberFromFileName(songId: String): Int? {
+        val fileName = songPath(songId)?.substringAfterLast('/') ?: return null
+        val decoded =
+            runCatching {
+                var value = fileName
+                repeat(2) { value = java.net.URLDecoder.decode(value.replace("+", "%2B"), "UTF-8") }
+                value
+            }.getOrDefault(fileName)
+        val match = Regex("""^(?:(\d{1,2})-)?(\d{1,3})[.\s_-]""").find(decoded) ?: return null
+        return match.groupValues[2].toIntOrNull()?.takeIf { it > 0 }
     }
 
     fun categoryId(key: String): String = CATEGORY_PREFIX + key
