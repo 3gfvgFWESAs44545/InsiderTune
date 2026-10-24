@@ -47,13 +47,6 @@ dependencyResolutionManagement {
 rootProject.name = "ArchiveTune"
 include(":app")
 include(":core")
-include(":lyrics:kugou")
-include(":lyrics:lrclib")
-include(":lyrics:simpmusic")
-include(":lyrics:paxsenix")
-include(":lyrics:betterlyrics")
-include(":lyrics:unison")
-include(":lyrics:youlyplus")
 include(":canvas")
 include(":shazamkit")
 include(":spotifycore")

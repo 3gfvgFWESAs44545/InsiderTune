@@ -438,7 +438,6 @@ fun BottomSheetPlayer(
     val canSkipNext by playerConnection.canSkipNext.collectAsState()
 
     val aodModeEnabled by playerConnection.aodModeEnabled.collectAsStateWithLifecycle()
-    val currentLyricsEntity by playerConnection.currentLyrics.collectAsStateWithLifecycle(initialValue = null)
     val (thumbnailCornerRadius) = rememberPreference(ThumbnailCornerRadiusKey, defaultValue = 8f)
     val lowDataModeActive = rememberLowDataModeActive()
     val playerSwapState =
@@ -478,9 +477,6 @@ fun BottomSheetPlayer(
     }
     var duration by rememberSaveable(mediaMetadata?.id) {
         mutableLongStateOf(playerConnection.player.duration)
-    }
-    var lyricsSyncOffset by rememberSaveable(mediaMetadata?.id) {
-        mutableIntStateOf(0)
     }
     var sliderPosition by remember(mediaMetadata?.id) {
         mutableStateOf<Long?>(null)
@@ -971,13 +967,9 @@ fun BottomSheetPlayer(
             initialAnchor = 0,
         )
 
-    var isLyricsScreenVisible by rememberSaveable {
-        mutableStateOf(false)
-    }
     val openQueue =
         remember(state, queueSheetState) {
             {
-                isLyricsScreenVisible = false
                 if (!state.isExpandedOrExpanding) {
                     state.expandSoft()
                 }
@@ -990,7 +982,6 @@ fun BottomSheetPlayer(
     }
     BackHandler(enabled = !aodModeEnabled && isPlayerVisible) {
         when {
-            isLyricsScreenVisible -> isLyricsScreenVisible = false
             queueSheetState.isExpandedOrExpanding -> queueSheetState.collapseSoft()
             state.isExpandedOrExpanding -> state.collapseSoft()
         }
@@ -1482,7 +1473,6 @@ fun BottomSheetPlayer(
                             canvasFallbackUrl = artworkCanvas?.videoUrl,
                             onCollapseClick = { state.collapseSoft() },
                             onQueueClick = openQueue,
-                            onLyricsClick = { isLyricsScreenVisible = true },
                             onSliderValueChange = onSliderValueChange,
                             onSliderValueChangeFinished = onSliderValueChangeFinished,
                             landscape = true,
@@ -1518,7 +1508,6 @@ fun BottomSheetPlayer(
                             iconButtonColor = iconButtonColor,
                             onCollapseClick = { state.collapseSoft() },
                             onQueueClick = openQueue,
-                            onLyricsClick = { isLyricsScreenVisible = true },
                             onSliderValueChange = onSliderValueChange,
                             onSliderValueChangeFinished = onSliderValueChangeFinished,
                             onSleepTimerClick = {
@@ -1775,7 +1764,6 @@ fun BottomSheetPlayer(
                             canvasFallbackUrl = artworkCanvas?.videoUrl,
                             onCollapseClick = { state.collapseSoft() },
                             onQueueClick = openQueue,
-                            onLyricsClick = { isLyricsScreenVisible = true },
                             onSliderValueChange = onSliderValueChange,
                             onSliderValueChangeFinished = onSliderValueChangeFinished,
                             gradientColors = gradientColors,
@@ -1810,7 +1798,6 @@ fun BottomSheetPlayer(
                             iconButtonColor = iconButtonColor,
                             onCollapseClick = { state.collapseSoft() },
                             onQueueClick = openQueue,
-                            onLyricsClick = { isLyricsScreenVisible = true },
                             onSliderValueChange = onSliderValueChange,
                             onSliderValueChangeFinished = onSliderValueChangeFinished,
                             onSleepTimerClick = {
@@ -1925,22 +1912,8 @@ fun BottomSheetPlayer(
             TextBackgroundColor = TextBackgroundColor,
             textButtonColor = textButtonColor,
             iconButtonColor = iconButtonColor,
-            onShowLyrics = { isLyricsScreenVisible = true },
             pureBlack = pureBlack,
         )
-
-        mediaMetadata?.let { metadata ->
-            MikoLyricsTransition(
-                visible = isLyricsScreenVisible,
-                backHandlerEnabled = isLyricsScreenVisible && state.isExpandedOrExpanding,
-                mediaMetadata = metadata,
-                navController = navController,
-                lyricsSyncOffset = lyricsSyncOffset,
-                onLyricsSyncOffsetChange = { lyricsSyncOffset = it },
-                onDismiss = { isLyricsScreenVisible = false },
-                onQueueClick = openQueue,
-            )
-        }
 
         AnimatedVisibility(
             visible = aodModeEnabled,
@@ -1972,7 +1945,6 @@ fun BottomSheetPlayer(
                 onSeek = { sliderPosition = it },
                 onSeekFinished = onSliderValueChangeFinished,
                 onExit = { playerConnection.aodModeEnabled.value = false },
-                lyricsText = currentLyricsEntity?.lyrics,
             )
         }
     }
@@ -1994,70 +1966,6 @@ fun BottomSheetPlayer(
             onClose = dismissPlaybackError,
             onLogin = loginClick,
         )
-    }
-}
-
-@Composable
-private fun MikoLyricsTransition(
-    visible: Boolean,
-    backHandlerEnabled: Boolean,
-    mediaMetadata: MediaMetadata,
-    navController: NavController,
-    lyricsSyncOffset: Int,
-    onLyricsSyncOffsetChange: (Int) -> Unit,
-    onDismiss: () -> Unit,
-    onQueueClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    val progress by animateFloatAsState(
-        targetValue = if (visible) 1f else 0f,
-        animationSpec =
-            spring(
-                dampingRatio = 0.82f,
-                stiffness = Spring.StiffnessMediumLow,
-            ),
-        label = "mikoLyricsTransition",
-    )
-
-    val boundedProgress = progress.coerceIn(0f, 1f)
-
-    if (visible || boundedProgress > 0.001f) {
-        val scaleX = 0.92f + (0.08f * boundedProgress)
-        val scaleY = 0.78f + (0.22f * boundedProgress)
-        val alpha = (0.2f + (0.8f * boundedProgress)).coerceIn(0f, 1f)
-        val cornerRadius = 32.dp * (1f - boundedProgress)
-
-        Box(
-            modifier =
-                modifier
-                    .fillMaxSize()
-                    .graphicsLayer { this.alpha = boundedProgress }
-                    .background(Color.Black.copy(alpha = 0.24f * boundedProgress)),
-        ) {
-            Box(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .graphicsLayer {
-                            transformOrigin = TransformOrigin(0.5f, 1f)
-                            this.scaleX = scaleX
-                            this.scaleY = scaleY
-                            this.alpha = alpha
-                            translationY = size.height * 0.16f * (1f - boundedProgress)
-                        }.clip(RoundedCornerShape(cornerRadius))
-                        .background(MaterialTheme.colorScheme.surface),
-            ) {
-                LyricsScreen(
-                    mediaMetadata = mediaMetadata,
-                    onBackClick = onDismiss,
-                    navController = navController,
-                    lyricsSyncOffset = lyricsSyncOffset,
-                    onLyricsSyncOffsetChange = onLyricsSyncOffsetChange,
-                    onQueueClick = onQueueClick,
-                    backHandlerEnabled = backHandlerEnabled,
-                )
-            }
-        }
     }
 }
 

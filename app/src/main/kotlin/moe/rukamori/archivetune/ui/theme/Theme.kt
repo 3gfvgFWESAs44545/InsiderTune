@@ -55,14 +55,6 @@ val DefaultThemeColor = Color(0xFFED5564)
 val LocalArchiveTuneFontPreference = staticCompositionLocalOf { AppFontPreference.DEFAULT }
 val LocalArchiveTuneFontFamily = staticCompositionLocalOf { AppFontFamily }
 
-@Composable
-fun rememberArchiveTuneLyricsFontFamily(): FontFamily {
-    val fontPreference = LocalArchiveTuneFontPreference.current
-    val fontFamily = LocalArchiveTuneFontFamily.current
-    return remember(fontPreference, fontFamily) {
-        if (fontPreference == AppFontPreference.DEFAULT) LyricsFontFamily else fontFamily
-    }
-}
 
 data class ThemeSeedPalette(
     val primary: Color,

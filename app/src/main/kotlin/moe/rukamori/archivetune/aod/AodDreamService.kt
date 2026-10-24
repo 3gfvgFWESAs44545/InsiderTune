@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 import moe.rukamori.archivetune.R
 import moe.rukamori.archivetune.constants.AodModeEnabledKey
 import moe.rukamori.archivetune.db.MusicDatabase
-import moe.rukamori.archivetune.db.entities.LyricsEntity
 import moe.rukamori.archivetune.extensions.togglePlayPause
 import moe.rukamori.archivetune.models.MediaMetadata
 import moe.rukamori.archivetune.playback.MusicService
@@ -154,9 +153,6 @@ class AodDreamService :
                         val canSkipPrev by (conn?.canSkipPrevious ?: fallbackSkip).collectAsStateWithLifecycle()
                         val canSkipNxt by (conn?.canSkipNext ?: fallbackSkip).collectAsStateWithLifecycle()
 
-                        val fallbackLyrics = remember { MutableStateFlow<LyricsEntity?>(null) }
-                        val currentLyricsEntity by (conn?.currentLyrics ?: fallbackLyrics)
-                            .collectAsStateWithLifecycle(initialValue = null)
 
                         val metadata = mediaMetadata ?: MediaMetadata(
                             id = "",
@@ -185,7 +181,6 @@ class AodDreamService :
                                 }
                             },
                             onExit = { finish() },
-                            lyricsText = currentLyricsEntity?.lyrics,
                         )
                     }
                 }

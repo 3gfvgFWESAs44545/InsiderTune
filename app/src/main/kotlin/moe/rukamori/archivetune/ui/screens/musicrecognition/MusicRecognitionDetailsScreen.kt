@@ -64,7 +64,6 @@ fun MusicRecognitionDetailsScreen(
             artworkUrl = track.coverArtHqUrl ?: track.coverArtUrl,
             metadata = listOfNotNull(track.genre, track.releaseDate).filter(String::isNotBlank).joinToString(" • "),
             label = track.label?.takeIf(String::isNotBlank),
-            lyricsPreview = track.lyrics.take(6).takeIf { it.isNotEmpty() }?.joinToString("\n"),
             shazamUrl = track.shazamUrl?.takeIf(String::isNotBlank),
             isrc = track.isrc?.takeIf(String::isNotBlank),
             searchQuery = track.searchQuery,

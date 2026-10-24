@@ -3125,7 +3125,6 @@ fun V9PlayerContent(
     canvasFallbackUrl: String?,
     onCollapseClick: () -> Unit,
     onQueueClick: () -> Unit,
-    onLyricsClick: () -> Unit,
     onSliderValueChange: (Long) -> Unit,
     onSliderValueChangeFinished: () -> Unit,
     modifier: Modifier = Modifier,
@@ -3206,7 +3205,6 @@ fun V9PlayerContent(
             iconButtonColor = iconButtonColor,
             onCollapseClick = onCollapseClick,
             onQueueClick = onQueueClick,
-            onLyricsClick = onLyricsClick,
             onTitleClick = onTitleClick,
             onArtistClick = onArtistClick,
             onPreviousClick = playerConnection::seekToPrevious,
@@ -3243,7 +3241,6 @@ fun V9PlayerContent(
             iconButtonColor = iconButtonColor,
             onCollapseClick = onCollapseClick,
             onQueueClick = onQueueClick,
-            onLyricsClick = onLyricsClick,
             onTitleClick = onTitleClick,
             onArtistClick = onArtistClick,
             onPreviousClick = playerConnection::seekToPrevious,
@@ -3281,7 +3278,6 @@ private fun V9PortraitContent(
     iconButtonColor: Color,
     onCollapseClick: () -> Unit,
     onQueueClick: () -> Unit,
-    onLyricsClick: () -> Unit,
     onPreviousClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -3320,7 +3316,6 @@ private fun V9PortraitContent(
                 containerColor = textButtonColor.copy(alpha = 0.16f),
                 iconColor = textBackgroundColor,
                 onCollapseClick = onCollapseClick,
-                onLyricsClick = onLyricsClick,
                 onQueueClick = onQueueClick,
             )
 
@@ -3503,7 +3498,6 @@ private fun V9LandscapeContent(
     iconButtonColor: Color,
     onCollapseClick: () -> Unit,
     onQueueClick: () -> Unit,
-    onLyricsClick: () -> Unit,
     onPreviousClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit,
@@ -3570,7 +3564,6 @@ private fun V9LandscapeContent(
                     containerColor = textButtonColor.copy(alpha = 0.16f),
                     iconColor = textBackgroundColor,
                     onCollapseClick = onCollapseClick,
-                    onLyricsClick = onLyricsClick,
                     onQueueClick = onQueueClick,
                 )
 
@@ -3626,7 +3619,6 @@ private fun V9Header(
     containerColor: Color,
     iconColor: Color,
     onCollapseClick: () -> Unit,
-    onLyricsClick: () -> Unit,
     onQueueClick: () -> Unit,
 ) {
     Row(
@@ -4484,7 +4476,6 @@ fun V10PlayerContent(
     iconButtonColor: Color,
     onCollapseClick: () -> Unit,
     onQueueClick: () -> Unit,
-    onLyricsClick: () -> Unit,
     onSliderValueChange: (Long) -> Unit,
     onSliderValueChangeFinished: () -> Unit,
     onSleepTimerClick: () -> Unit,
@@ -4565,7 +4556,6 @@ fun V10PlayerContent(
                         containerColor = accent.copy(alpha = 0.16f),
                         iconColor = accent,
                         onCollapseClick = onCollapseClick,
-                        onLyricsClick = onLyricsClick,
                         onQueueClick = onQueueClick,
                     )
                     PlayerTitleText(

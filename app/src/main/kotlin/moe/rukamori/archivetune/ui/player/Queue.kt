@@ -141,7 +141,6 @@ fun Queue(
     TextBackgroundColor: Color,
     textButtonColor: Color,
     iconButtonColor: Color,
-    onShowLyrics: () -> Unit = {},
     pureBlack: Boolean,
 ) {
     val (enableHapticFeedback) = rememberPreference(EnableHapticFeedbackKey, true)
@@ -410,7 +409,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                         onRepeatModeClick = { playerConnection.player.toggleRepeatMode() },
                         onMenuClick = {
                             menuState.show {
@@ -455,7 +453,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                         onMenuClick = {
                             menuState.show {
                                 PlayerMenu(
@@ -499,7 +496,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                         onMenuClick = {
                             menuState.show {
                                 PlayerMenu(
@@ -546,7 +542,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                     )
                 }
 
@@ -565,7 +560,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                     )
                 }
 
@@ -587,7 +581,6 @@ fun Queue(
                                 showSleepTimerDialog = true
                             }
                         },
-                        onShowLyrics = onShowLyrics,
                     )
                 }
 
@@ -656,7 +649,6 @@ fun Queue(
                     QueueCollapsedContentV7(
                         textBackgroundColor = Color.White,
                         onExpandQueue = openQueue,
-                        onShowLyrics = onShowLyrics,
                         onDeviceClick = {
                             SystemMediaControlResolver.openMediaOutputSwitcher(context)
                         },
@@ -684,7 +676,6 @@ fun Queue(
                         sleepTimerEnabled = sleepTimerEnabled,
                         sleepTimerTimeLeft = sleepTimerTimeLeft,
                         onExpandQueue = openQueue,
-                        onShowLyrics = onShowLyrics,
                         onSleepTimerClick = {
                             if (sleepTimerEnabled) {
                                 playerConnection.service.sleepTimer.clear()

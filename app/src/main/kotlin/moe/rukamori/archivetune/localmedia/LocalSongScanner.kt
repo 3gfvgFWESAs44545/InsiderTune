@@ -38,12 +38,10 @@ import moe.rukamori.archivetune.db.entities.AlbumArtistMap
 import moe.rukamori.archivetune.db.entities.AlbumEntity
 import moe.rukamori.archivetune.db.entities.ArtistEntity
 import moe.rukamori.archivetune.db.entities.FormatEntity
-import moe.rukamori.archivetune.db.entities.LyricsEntity
 import moe.rukamori.archivetune.db.entities.Song
 import moe.rukamori.archivetune.db.entities.SongAlbumMap
 import moe.rukamori.archivetune.db.entities.SongArtistMap
 import moe.rukamori.archivetune.db.entities.SongEntity
-import moe.rukamori.archivetune.lyrics.LyricsUtils
 import timber.log.Timber
 
 data class LocalSongScanConfig(
@@ -113,7 +111,6 @@ class LocalSongScanner @Inject constructor(
                     val removedIds = localSongIds().filterNot(scannedIdSet::contains)
                     removedIds.chunked(SqlBatchSize).forEach(::deleteSongsByIds)
                     val existingSongs = loadSongs(scannedIds)
-                    val existingLyrics = loadLyrics(scannedIds)
                     val existingFormats = loadFormats(scannedIds)
                     val resolver = CatalogResolver()
                     val artistCredits = enriched.tracks.flatMap { track ->
@@ -177,7 +174,6 @@ class LocalSongScanner @Inject constructor(
                         if (albumId != null) {
                             insert(SongAlbumMap(songId = track.id, albumId = albumId, index = track.trackNumber?.minus(1) ?: (Int.MAX_VALUE - 1)))
                         }
-                        updateEmbeddedLyrics(track, existingLyrics[track.id])
                     }
                     refreshLocalAlbumCounts()
                     pruneLocalAlbums()
@@ -343,9 +339,6 @@ class LocalSongScanner @Inject constructor(
     private suspend fun loadSongs(ids: List<String>): Map<String, Song> =
         ids.chunked(SqlBatchSize).flatMap { database.getSongsByIds(it) }.associateBy { it.song.id }
 
-    private suspend fun loadLyrics(ids: List<String>): Map<String, LyricsEntity> =
-        ids.chunked(SqlBatchSize).flatMap { database.getLyricsByIds(it) }.associateBy { it.id }
-
     private suspend fun loadFormats(ids: List<String>): Map<String, FormatEntity> =
         ids.chunked(SqlBatchSize).flatMap { database.getFormatsByIds(it) }.associateBy { it.id }
 
@@ -382,7 +375,6 @@ class LocalSongScanner @Inject constructor(
         val unknownArtist = context.getString(R.string.unknown_artist)
         val unknownTitle = context.getString(R.string.unknown)
         val tracks = mutableListOf<LocalTrackRecord>()
-        val lyricsExtractor = EmbeddedLyricsExtractor(context.contentResolver)
         val cursor = context.contentResolver.query(
             MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
             projection,
@@ -442,8 +434,6 @@ class LocalSongScanner @Inject constructor(
                     thumbnailUrl = metadata.thumbnailUrl,
                     mediaStoreThumbnailUrl = albumId?.takeIf { album != null }
                         ?.let { value -> ContentUris.withAppendedId(AlbumArtUri, value).toString() },
-                    embeddedLyrics = lyricsExtractor.extract(contentUri = uri, displayName = displayName, mimeType = mime)
-                        ?.let(LyricsUtils::lyricsOrNotFound)?.takeIf { value -> value != LyricsEntity.LYRICS_NOT_FOUND },
                 )
             }
         }
@@ -473,29 +463,6 @@ class LocalSongScanner @Inject constructor(
         val directory = File(context.filesDir, LocalArtworkDirectoryName)
         directory.listFiles()?.filter { it.isFile && it.name !in retainedArtworkFileNames }?.forEach {
             if (!it.delete()) Timber.tag(LogTag).w("Failed to delete stale local artwork: %s", it.name)
-        }
-    }
-
-    private fun updateEmbeddedLyrics(
-        track: LocalTrackRecord,
-        existingLyrics: LyricsEntity?,
-    ) {
-        val embeddedLyrics = track.embeddedLyrics
-        if (embeddedLyrics != null) {
-            if (existingLyrics == null || existingLyrics.hasGenericSource()) {
-                database.upsert(
-                    LyricsEntity(
-                        id = track.id,
-                        lyrics = embeddedLyrics,
-                        source = LyricsEntity.Source.EMBEDDED.value,
-                    ),
-                )
-            }
-            return
-        }
-
-        if (existingLyrics?.source == LyricsEntity.Source.EMBEDDED.value) {
-            database.delete(existingLyrics)
         }
     }
 
@@ -572,7 +539,6 @@ class LocalSongScanner @Inject constructor(
         val mimeType: String,
         val thumbnailUrl: String?,
         val mediaStoreThumbnailUrl: String?,
-        val embeddedLyrics: String?,
         val remoteArtistId: String? = null,
         val matchedArtistName: String? = null,
         val artistThumbnailUrl: String? = null,

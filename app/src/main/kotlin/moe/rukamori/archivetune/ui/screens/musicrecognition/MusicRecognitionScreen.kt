@@ -763,14 +763,6 @@ fun ResultSupportingContent(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        track.lyricsPreview?.let { lyrics ->
-            ResultInformationBlock(
-                iconRes = R.drawable.lyrics,
-                title = stringResource(R.string.music_recognition_lyrics_preview),
-                body = lyrics,
-            )
-        }
-
         track.label?.let { label ->
             ResultInformationBlock(
                 iconRes = R.drawable.info,

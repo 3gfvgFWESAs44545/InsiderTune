@@ -77,7 +77,6 @@ val AodShowClockKey = booleanPreferencesKey("aodShowClock")
 val AodClockStyleKey = stringPreferencesKey("aodClockStyle")
 val AodShowBatteryKey = booleanPreferencesKey("aodShowBattery")
 val AodPixelShiftEnabledKey = booleanPreferencesKey("aodPixelShiftEnabled")
-val AodShowLyricTickerKey = booleanPreferencesKey("aodShowLyricTicker")
 val AodAutoDimmingKey = booleanPreferencesKey("aodAutoDimming")
 val AodAutoDimTimeoutKey = intPreferencesKey("aodAutoDimTimeout")
 val AodGesturesEnabledKey = booleanPreferencesKey("aodGesturesEnabled")
@@ -198,17 +197,6 @@ val ContentCountryKey = stringPreferencesKey("contentCountry")
 val PlaylistSuggestionSourceKey = stringPreferencesKey("playlistSuggestionSource")
 val EnableKugouKey = booleanPreferencesKey("enableKugou")
 val EnableLrcLibKey = booleanPreferencesKey("enableLrclib")
-val EnableBetterLyricsKey = booleanPreferencesKey("enableBetterLyrics")
-val EnableBetterLyricsPortatoKey = booleanPreferencesKey("enableBetterLyricsPortato")
-val EnableYouLyPlusLyricsKey = booleanPreferencesKey("enableYouLyPlusLyrics")
-val EnableSimpMusicLyricsKey = booleanPreferencesKey("enableSimpMusicLyrics")
-val EnableMegalobizLyricsKey = booleanPreferencesKey("enableMegalobizLyrics")
-val EnablePaxsenixLyricsKey = booleanPreferencesKey("enablePaxsenixLyrics")
-val PaxsenixApiKeyKey = stringPreferencesKey("paxsenixApiKey")
-val EnablePaxsenixAppleMusicLyricsKey = booleanPreferencesKey("enablePaxsenixAppleMusicLyrics")
-val EnablePaxsenixSpotifyLyricsKey = booleanPreferencesKey("enablePaxsenixSpotifyLyrics")
-val EnablePaxsenixMusixmatchLyricsKey = booleanPreferencesKey("enablePaxsenixMusixmatchLyrics")
-val EnableUnisonLyricsKey = booleanPreferencesKey("enableUnisonLyrics")
 val HideExplicitKey = booleanPreferencesKey("hideExplicit")
 val HideVideoKey = booleanPreferencesKey("hideVideo")
 val AiContentFilterEnabledKey = booleanPreferencesKey("aiContentFilterEnabled")
@@ -440,8 +428,6 @@ val QuickPicksKey = stringPreferencesKey("discover")
 
 val NewsLastReadTimestampKey = longPreferencesKey("news_last_read_timestamp")
 val SpeedDialSongIdsKey = stringPreferencesKey("speedDialSongIds")
-val PreferredLyricsProviderKey = stringPreferencesKey("lyricsProvider")
-val LyricsProviderOrderKey = stringPreferencesKey("lyricsProviderOrder")
 val QueueEditLockKey = booleanPreferencesKey("queueEditLock")
 
 enum class LibraryViewType {
@@ -599,62 +585,6 @@ enum class QuickPicks {
     DONT_SHOW,
 }
 
-enum class PreferredLyricsProvider {
-    BETTER_LYRICS,
-    BETTER_LYRICS_PORTATO,
-    YOULY_PLUS,
-    LRCLIB,
-    KUGOU,
-    MEGALOBIZ,
-    SIMPMUSIC,
-    UNISON,
-    PAXSENIX_APPLE_MUSIC,
-    PAXSENIX_SPOTIFY,
-    PAXSENIX_MUSIXMATCH,
-}
-
-val DefaultLyricsProviderOrder =
-    listOf(
-        PreferredLyricsProvider.BETTER_LYRICS,
-        PreferredLyricsProvider.BETTER_LYRICS_PORTATO,
-        PreferredLyricsProvider.YOULY_PLUS,
-        PreferredLyricsProvider.LRCLIB,
-        PreferredLyricsProvider.KUGOU,
-        PreferredLyricsProvider.MEGALOBIZ,
-        PreferredLyricsProvider.SIMPMUSIC,
-        PreferredLyricsProvider.UNISON,
-        PreferredLyricsProvider.PAXSENIX_APPLE_MUSIC,
-        PreferredLyricsProvider.PAXSENIX_SPOTIFY,
-        PreferredLyricsProvider.PAXSENIX_MUSIXMATCH,
-    )
-
-fun deserializeLyricsProviderOrder(orderStr: String?): List<PreferredLyricsProvider> {
-    if (orderStr.isNullOrBlank()) return DefaultLyricsProviderOrder
-
-    val parsed =
-        orderStr
-            .split(",")
-            .mapNotNull { name ->
-                PreferredLyricsProvider.entries.find { it.name == name.trim() }
-            }.distinct()
-
-    val normalized =
-        when {
-            parsed.take(3) ==
-                listOf(
-                    PreferredLyricsProvider.LRCLIB,
-                    PreferredLyricsProvider.KUGOU,
-                    PreferredLyricsProvider.BETTER_LYRICS,
-                )
-            -> listOf(PreferredLyricsProvider.BETTER_LYRICS) + parsed.filterNot { it == PreferredLyricsProvider.BETTER_LYRICS }
-
-            else -> parsed
-        }
-
-    val missing = DefaultLyricsProviderOrder.filterNot { it in normalized }
-    return normalized + missing
-}
-
 enum class PlayerButtonsStyle {
     DEFAULT,
     SECONDARY,
@@ -684,20 +614,6 @@ enum class PlayerBackgroundStyle {
     GLOW_ANIMATED,
 }
 
-enum class LyricsBackgroundStyle {
-    DEFAULT,
-    FOLLOW_THEME,
-    COLORING,
-    CUSTOM;
-
-    fun resolveFor(playerBackgroundStyle: PlayerBackgroundStyle): LyricsBackgroundStyle =
-        when {
-            playerBackgroundStyle == PlayerBackgroundStyle.CUSTOM -> CUSTOM
-            this == CUSTOM -> DEFAULT
-            else -> this
-        }
-}
-
 enum class MiniPlayerBackgroundStyle {
     THEME,
     GRADIENT,
@@ -723,22 +639,6 @@ val PlayerCustomBlurKey = floatPreferencesKey("playerCustomBlur")
 val PlayerCustomContrastKey = floatPreferencesKey("playerCustomContrast")
 val PlayerCustomBrightnessKey = floatPreferencesKey("playerCustomBrightness")
 
-val LyricsAnimationStyleKey = stringPreferencesKey("lyricsAnimationStyle")
-
-enum class LyricsAnimationStyle {
-    NONE,
-    FADE,
-    GLOW,
-    SLIDE,
-    KARAOKE,
-    APPLE,
-}
-
-val LyricsTextSizeKey = floatPreferencesKey("lyricsTextSize")
-val LyricsLineSpacingKey = floatPreferencesKey("lyricsLineSpacing")
-val LyricsLineBlurKey = booleanPreferencesKey("lyricsLineBlur")
-val ShowLyricsPlayerControlsKey = booleanPreferencesKey("showLyricsPlayerControls")
-
 val TopSize = stringPreferencesKey("topSize")
 
 const val HISTORY_DURATION_DEFAULT = 30
@@ -750,29 +650,6 @@ val HistoryDuration = intPreferencesKey("historyDuration")
 
 val PlayerButtonsStyleKey = stringPreferencesKey("player_buttons_style")
 val PlayerBackgroundStyleKey = stringPreferencesKey("playerBackgroundStyle")
-val LyricsBackgroundStyleKey = stringPreferencesKey("lyricsBackgroundStyle")
-val ShowLyricsKey = booleanPreferencesKey("showLyrics")
-val LyricsTextPositionKey = stringPreferencesKey("lyricsTextPosition")
-val LyricsClickKey = booleanPreferencesKey("lyricsClick")
-val LyricsScrollKey = booleanPreferencesKey("lyricsScrollKey")
-val LyricsRomanizeJapaneseKey = booleanPreferencesKey("lyricsRomanizeJapanese")
-val LyricsRomanizeKoreanKey = booleanPreferencesKey("lyricsRomanizeKorean")
-val LyricsRomanizeChineseKey = booleanPreferencesKey("lyricsRomanizeChinese")
-val LyricsRomanizeHindiKey = booleanPreferencesKey("lyricsRomanizeHindi")
-val LyricsRomanizeOtherLanguagesKey = booleanPreferencesKey("lyricsRomanizeOtherLanguages")
-val TranslateLyricsKey = booleanPreferencesKey("translateLyrics")
-val UseLyricsV2Key = booleanPreferencesKey("useLyricsV2")
-val LyricsModeKey = stringPreferencesKey("lyricsMode")
-
-enum class LyricsMode {
-    V2,
-    ENHANCED,
-}
-
-val LyricsV2BounceFactorKey = floatPreferencesKey("lyricsV2BounceFactor")
-val LyricsV2GlowFactorKey = floatPreferencesKey("lyricsV2GlowFactor")
-val LyricsV2FillTransitionWidthKey = floatPreferencesKey("lyricsV2FillTransitionWidth")
-val LyricsV2LrcBounceEnabledKey = booleanPreferencesKey("lyricsV2LrcBounceEnabled")
 
 val PlayerVolumeKey = floatPreferencesKey("playerVolume")
 val RepeatModeKey = intPreferencesKey("repeatMode")

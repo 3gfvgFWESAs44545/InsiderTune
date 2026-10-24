@@ -20,7 +20,6 @@ data class RecognizedTrack(
     val genre: String?,
     val releaseDate: String?,
     val label: String?,
-    val lyrics: List<String>,
     val shazamUrl: String?,
     val isrc: String?,
 ) {

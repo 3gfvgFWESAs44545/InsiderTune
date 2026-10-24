@@ -544,7 +544,6 @@ fun QueueCollapsedContentV2(
     mediaMetadata: MediaMetadata?,
     onExpandQueue: () -> Unit,
     onSleepTimerClick: () -> Unit,
-    onShowLyrics: () -> Unit,
     onRepeatModeClick: () -> Unit,
     onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -762,7 +761,6 @@ fun QueueCollapsedContentV3(
     sleepTimerTimeLeft: Long,
     onExpandQueue: () -> Unit,
     onSleepTimerClick: () -> Unit,
-    onShowLyrics: () -> Unit,
     onMenuClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -887,7 +885,6 @@ fun QueueCollapsedContentV1(
     sleepTimerTimeLeft: Long,
     onExpandQueue: () -> Unit,
     onSleepTimerClick: () -> Unit,
-    onShowLyrics: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -1007,7 +1004,6 @@ fun QueueCollapsedContentV4(
     mediaMetadata: MediaMetadata?,
     onExpandQueue: () -> Unit,
     onSleepTimerClick: () -> Unit,
-    onShowLyrics: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier.fillMaxWidth()) {
@@ -1125,7 +1121,6 @@ fun QueueCollapsedContentV4(
 fun QueueCollapsedContentV7(
     textBackgroundColor: Color,
     onExpandQueue: () -> Unit,
-    onShowLyrics: () -> Unit,
     onDeviceClick: () -> Unit,
     device: ActiveOutputDevice,
     modifier: Modifier = Modifier,
@@ -1189,7 +1184,6 @@ fun QueueCollapsedContentV8(
     sleepTimerEnabled: Boolean,
     sleepTimerTimeLeft: Long,
     onExpandQueue: () -> Unit,
-    onShowLyrics: () -> Unit,
     onSleepTimerClick: () -> Unit,
     onDeviceClick: () -> Unit,
     device: ActiveOutputDevice,

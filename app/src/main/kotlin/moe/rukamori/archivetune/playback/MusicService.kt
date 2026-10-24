@@ -173,7 +173,6 @@ import moe.rukamori.archivetune.constants.PermanentShuffleKey
 import moe.rukamori.archivetune.constants.PersistentQueueKey
 import moe.rukamori.archivetune.constants.PlayerVolumeKey
 import moe.rukamori.archivetune.constants.RepeatModeKey
-import moe.rukamori.archivetune.constants.ShowLyricsKey
 import moe.rukamori.archivetune.constants.SkipSilenceKey
 import moe.rukamori.archivetune.constants.SmartTrimmerKey
 import moe.rukamori.archivetune.constants.StopMusicOnTaskClearKey
@@ -208,7 +207,6 @@ import moe.rukamori.archivetune.innertube.YouTube
 import moe.rukamori.archivetune.innertube.models.SongItem
 import moe.rukamori.archivetune.innertube.models.WatchEndpoint
 import moe.rukamori.archivetune.innertube.models.response.PlayerResponse
-import moe.rukamori.archivetune.lyrics.LyricsHelper
 import moe.rukamori.archivetune.models.MediaMetadata
 import moe.rukamori.archivetune.models.PersistPlayerState
 import moe.rukamori.archivetune.models.PersistQueue
@@ -283,9 +281,6 @@ class MusicService :
 
     @Inject
     lateinit var database: MusicDatabase
-
-    @Inject
-    lateinit var lyricsHelper: LyricsHelper
 
     @Inject
     lateinit var syncUtils: SyncUtils
@@ -1301,27 +1296,6 @@ class MusicService :
         currentSong.debounce(300).collect(scope) { song ->
             updateNotification()
             if (song != null && player.playWhenReady && player.playbackState == Player.STATE_READY) {
-            }
-        }
-
-        combine(
-            currentMediaMetadata.distinctUntilChangedBy { it?.id },
-            // Pixel Notes: lyrics removed; never fetch them in the background.
-            kotlinx.coroutines.flow.flowOf(false),
-        ) { mediaMetadata, showLyrics ->
-            mediaMetadata to showLyrics
-        }.collectLatest(ioScope) { (mediaMetadata, showLyrics) ->
-            if (showLyrics && mediaMetadata != null && !mediaMetadata.isPodcast && database
-                    .lyrics(mediaMetadata.id)
-                    .first() == null
-            ) {
-                val lyrics = lyricsHelper.getLyrics(mediaMetadata)
-                database.query {
-                    insertLyricsIfAbsent(
-                        id = mediaMetadata.id,
-                        lyrics = lyrics,
-                    )
-                }
             }
         }
 

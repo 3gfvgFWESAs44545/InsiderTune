@@ -63,7 +63,6 @@ import moe.rukamori.archivetune.ui.screens.settings.CanvasSettings
 import moe.rukamori.archivetune.ui.screens.settings.AppearanceSettings
 import moe.rukamori.archivetune.ui.screens.settings.BackupAndRestore
 import moe.rukamori.archivetune.ui.screens.settings.ChangelogScreen
-import moe.rukamori.archivetune.ui.screens.settings.ContentSettings
 import moe.rukamori.archivetune.ui.screens.settings.CustomizeBackground
 import moe.rukamori.archivetune.ui.screens.settings.DebugSettings
 import moe.rukamori.archivetune.ui.screens.settings.HiddenPlaylistsScreen
@@ -71,8 +70,6 @@ import moe.rukamori.archivetune.ui.screens.settings.IconScreen
 import moe.rukamori.archivetune.ui.screens.settings.IntegrationScreen
 import moe.rukamori.archivetune.ui.screens.settings.InternetSettings
 import moe.rukamori.archivetune.ui.screens.settings.LogcatScreen
-import moe.rukamori.archivetune.ui.screens.settings.LyricsAnimationSettings
-import moe.rukamori.archivetune.ui.screens.settings.LyricsSettings
 import moe.rukamori.archivetune.ui.screens.settings.PalettePickerScreen
 import moe.rukamori.archivetune.ui.screens.settings.PlayerSettings
 import moe.rukamori.archivetune.ui.screens.settings.PrivacySettings
@@ -440,17 +437,8 @@ fun NavGraphBuilder.navigationBuilder(
     composable("settings/appearance/palette_picker") {
         PalettePickerScreen(navController)
     }
-    composable("settings/appearance/lyrics_animations") {
-        LyricsAnimationSettings(navController)
-    }
     composable("settings/appearance/theme_creator") {
         ThemeCreatorScreen(navController)
-    }
-    composable("settings/content") {
-        ContentSettings(navController)
-    }
-    composable("settings/lyrics") {
-        LyricsSettings(navController)
     }
     composable("settings/internet") {
         InternetSettings(navController)

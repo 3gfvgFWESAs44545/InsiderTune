@@ -42,7 +42,6 @@ import moe.rukamori.archivetune.db.entities.LibraryTopMixSongMap
 import moe.rukamori.archivetune.db.entities.LikedSongDate
 import moe.rukamori.archivetune.db.entities.ListeningBySlot
 import moe.rukamori.archivetune.db.entities.ListeningTotals
-import moe.rukamori.archivetune.db.entities.LyricsEntity
 import moe.rukamori.archivetune.db.entities.LocalMusicAlias
 import moe.rukamori.archivetune.db.entities.PlayCountEntity
 import moe.rukamori.archivetune.db.entities.Playlist
@@ -845,21 +844,6 @@ interface DatabaseDao {
 
     @Query("SELECT * FROM format WHERE id = :id LIMIT 1")
     fun getFormatByIdBlocking(id: String): FormatEntity?
-
-    @Transaction
-    @Query("SELECT * FROM lyrics WHERE id = :id")
-    fun lyrics(id: String?): Flow<LyricsEntity?>
-
-    @Transaction
-    @Query("SELECT * FROM lyrics WHERE id = :id LIMIT 1")
-    suspend fun getLyricsById(id: String): LyricsEntity?
-
-    @Transaction
-    @Query("SELECT * FROM lyrics WHERE id IN (:ids)")
-    suspend fun getLyricsByIds(ids: List<String>): List<LyricsEntity>
-
-    @Query("DELETE FROM lyrics")
-    fun clearAllLyrics()
 
     @Transaction
     @SuppressWarnings(RoomWarnings.QUERY_MISMATCH)
@@ -2132,88 +2116,6 @@ interface DatabaseDao {
     fun upsert(map: SongAlbumMap)
 
     @Upsert
-    fun upsert(lyrics: LyricsEntity)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    fun insert(lyrics: LyricsEntity): Long
-
-    @Transaction
-    fun insertLyricsIfAbsent(
-        id: String,
-        lyrics: String,
-        source: String = LyricsEntity.Source.REMOTE.value,
-        updatedAt: Long = System.currentTimeMillis(),
-    ) {
-        insert(
-            LyricsEntity(
-                id = id,
-                lyrics = lyrics,
-                source = source,
-                updatedAt = updatedAt,
-            ),
-        )
-    }
-
-    @Query(
-        """
-        UPDATE lyrics
-        SET lyrics = :lyrics, source = :source, updatedAt = :updatedAt
-        WHERE id = :id AND lyrics = :notFoundLyrics
-        """,
-    )
-    fun replaceLyricsIfNotFound(
-        id: String,
-        lyrics: String,
-        source: String,
-        updatedAt: Long,
-        notFoundLyrics: String,
-    ): Int
-
-    @Transaction
-    fun replaceLyricsIfAbsentOrNotFound(
-        id: String,
-        lyrics: String,
-        source: String = LyricsEntity.Source.REMOTE.value,
-        updatedAt: Long = System.currentTimeMillis(),
-    ) {
-        val insertedRowId =
-            insert(
-                LyricsEntity(
-                    id = id,
-                    lyrics = lyrics,
-                    source = source,
-                    updatedAt = updatedAt,
-                ),
-            )
-        if (insertedRowId == -1L) {
-            replaceLyricsIfNotFound(
-                id = id,
-                lyrics = lyrics,
-                source = source,
-                updatedAt = updatedAt,
-                notFoundLyrics = LyricsEntity.LYRICS_NOT_FOUND,
-            )
-        }
-    }
-
-    @Transaction
-    fun replaceLyrics(
-        id: String,
-        lyrics: String,
-        source: String,
-        updatedAt: Long = System.currentTimeMillis(),
-    ) {
-        upsert(
-            LyricsEntity(
-                id = id,
-                lyrics = lyrics,
-                source = source,
-                updatedAt = updatedAt,
-            ),
-        )
-    }
-
-    @Upsert
     fun upsert(format: FormatEntity)
 
     @Query("UPDATE format SET bitrate = :bitrate, sampleRate = :sampleRate WHERE id = :id")
@@ -2298,9 +2200,6 @@ interface DatabaseDao {
 
     @Query("DELETE FROM playlist WHERE browseId = :browseId")
     fun deletePlaylistById(browseId: String)
-
-    @Delete
-    fun delete(lyrics: LyricsEntity)
 
     @Delete
     fun delete(searchHistory: SearchHistory)

@@ -301,7 +301,6 @@ private fun RecognitionResult.toDomain(): RecognizedTrack =
         genre = genre,
         releaseDate = releaseDate,
         label = label,
-        lyrics = lyrics.orEmpty().toList(),
         shazamUrl = shazamUrl,
         isrc = isrc,
     )

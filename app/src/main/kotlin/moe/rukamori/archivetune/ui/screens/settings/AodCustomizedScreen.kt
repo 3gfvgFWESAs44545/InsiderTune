@@ -103,7 +103,6 @@ import moe.rukamori.archivetune.constants.AodShowBatteryKey
 import moe.rukamori.archivetune.constants.AodShowClockKey
 import moe.rukamori.archivetune.constants.AodShowControlsKey
 import moe.rukamori.archivetune.constants.AodShowExitButtonKey
-import moe.rukamori.archivetune.constants.AodShowLyricTickerKey
 import moe.rukamori.archivetune.constants.AodShowProgressKey
 import moe.rukamori.archivetune.constants.AodShowThumbnailKey
 import moe.rukamori.archivetune.constants.AodShowTimeLabelsKey
@@ -210,7 +209,6 @@ fun AodCustomizedScreen(navController: NavController) {
 
     val (touchLockEnabled, onTouchLockEnabledChange) = rememberPreference(AodTouchLockEnabledKey, defaultValue = false)
     val (showClock, onShowClockChange) = rememberPreference(AodShowClockKey, defaultValue = true)
-    val (showLyricTicker, onShowLyricTickerChange) = rememberPreference(AodShowLyricTickerKey, defaultValue = true)
     val (clockStyle, onClockStyleChange) = rememberEnumPreference(AodClockStyleKey, defaultValue = AodClockStyle.BOLD_DIGITAL)
     val (showBattery, onShowBatteryChange) = rememberPreference(AodShowBatteryKey, defaultValue = true)
     val (pixelShiftEnabled, onPixelShiftEnabledChange) = rememberPreference(AodPixelShiftEnabledKey, defaultValue = true)
@@ -413,14 +411,6 @@ fun AodCustomizedScreen(navController: NavController) {
                             icon = { Icon(painterResource(R.drawable.close), null) },
                             checked = showExitButton,
                             onCheckedChange = onShowExitButtonChange,
-                        )
-                    }
-                    item {
-                        SwitchPreference(
-                            title = { Text(stringResource(R.string.aod_customize_show_lyric_ticker)) },
-                            icon = { Icon(painterResource(R.drawable.music_note), null) },
-                            checked = showLyricTicker,
-                            onCheckedChange = onShowLyricTickerChange,
                         )
                     }
                 }

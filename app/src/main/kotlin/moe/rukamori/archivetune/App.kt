@@ -50,8 +50,6 @@ import moe.rukamori.archivetune.gatekeeper.GatekeeperResult
 import moe.rukamori.archivetune.gatekeeper.RunGatekeeperCheckUseCase
 import moe.rukamori.archivetune.innertube.YouTube
 import moe.rukamori.archivetune.innertube.models.YouTubeLocale
-import moe.rukamori.archivetune.kugou.KuGou
-import moe.rukamori.archivetune.paxsenix.PaxsenixLyrics
 import moe.rukamori.archivetune.playback.stream.YoutubeiStreamRepository
 import moe.rukamori.archivetune.storage.StorageFolderKind
 import moe.rukamori.archivetune.storage.StorageLocationRepository
@@ -182,7 +180,6 @@ class App :
 
     private fun initializeCriticalSync() {
         startCanvasPolicy.start(applicationScope)
-        PaxsenixLyrics.setUserAgent("ArchiveTune", BuildConfig.VERSION_NAME)
 
         val locale = Locale.getDefault()
         val languageTag = locale.toLanguageTag().replace("-Hant", "")
@@ -194,9 +191,6 @@ class App :
                         ?: languageTag.takeIf { it in LanguageCodeToName }
                         ?: "en",
             )
-        if (languageTag == "zh-TW") {
-            KuGou.useTraditionalChinese = true
-        }
     }
 
     private fun initializeDeferredAsync() {
@@ -220,8 +214,6 @@ class App :
                 prefs[ContentLanguageKey]?.takeIf { it != SYSTEM_DEFAULT }?.let { lang ->
                     YouTube.locale = YouTube.locale.copy(hl = lang)
                 }
-
-                PaxsenixLyrics.setApiKey(prefs[PaxsenixApiKeyKey].orEmpty())
 
                 ProxyUtils.applyYouTubeProxy(
                     enabled = prefs[ProxyEnabledKey] == true,

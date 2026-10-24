@@ -91,8 +91,6 @@ import moe.rukamori.archivetune.constants.GridItemsSizeKey
 import moe.rukamori.archivetune.constants.HidePlayerThumbnailKey
 import moe.rukamori.archivetune.constants.LibraryChipOrderKey
 import moe.rukamori.archivetune.constants.LibraryFilter
-import moe.rukamori.archivetune.constants.LyricsBackgroundStyle
-import moe.rukamori.archivetune.constants.LyricsBackgroundStyleKey
 import moe.rukamori.archivetune.constants.MiniPlayerBackgroundStyle
 import moe.rukamori.archivetune.constants.MiniPlayerBackgroundStyleKey
 import moe.rukamori.archivetune.constants.NavigationBarBackgroundStyle
@@ -203,11 +201,6 @@ fun AppearanceSettings(navController: NavController) {
         rememberEnumPreference(
             PlayerBackgroundStyleKey,
             defaultValue = PlayerBackgroundStyle.DEFAULT,
-        )
-    val (configuredLyricsBackground, onLyricsBackgroundChange) =
-        rememberEnumPreference(
-            LyricsBackgroundStyleKey,
-            defaultValue = LyricsBackgroundStyle.DEFAULT,
         )
     val (miniPlayerBackground, onMiniPlayerBackgroundChange) =
         rememberEnumPreference(
@@ -369,15 +362,6 @@ fun AppearanceSettings(navController: NavController) {
         PlayerBackgroundStyle.entries.filter {
             it != PlayerBackgroundStyle.BLUR || Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
         }
-    val availableLyricsBackgroundStyles =
-        remember {
-            listOf(
-                LyricsBackgroundStyle.DEFAULT,
-                LyricsBackgroundStyle.FOLLOW_THEME,
-                LyricsBackgroundStyle.COLORING,
-            )
-        }
-    val lyricsBackground = configuredLyricsBackground.resolveFor(playerBackground)
     val isPlayerStyleCustomizationEnabled =
         when (playerDesignStyle) {
             PlayerDesignStyle.V7,
@@ -826,18 +810,7 @@ fun AppearanceSettings(navController: NavController) {
                             },
                         icon = { Icon(painterResource(R.drawable.gradient), null) },
                         selectedValue = playerBackground,
-                        onValueSelected = { selectedBackground ->
-                            onPlayerBackgroundChange(selectedBackground)
-                            when {
-                                selectedBackground == PlayerBackgroundStyle.CUSTOM -> {
-                                    onLyricsBackgroundChange(LyricsBackgroundStyle.CUSTOM)
-                                }
-
-                                configuredLyricsBackground == LyricsBackgroundStyle.CUSTOM -> {
-                                    onLyricsBackgroundChange(LyricsBackgroundStyle.DEFAULT)
-                                }
-                            }
-                        },
+                        onValueSelected = onPlayerBackgroundChange,
                         isEnabled = isPlayerStyleCustomizationEnabled,
                         valueText = {
                             when (it) {
@@ -1231,10 +1204,4 @@ enum class NavigationTab {
 enum class PlayerTextAlignment {
     SIDED,
     CENTER,
-}
-
-enum class LyricsPosition {
-    LEFT,
-    CENTER,
-    RIGHT,
 }

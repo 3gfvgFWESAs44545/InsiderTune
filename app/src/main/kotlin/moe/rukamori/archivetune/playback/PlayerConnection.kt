@@ -72,10 +72,6 @@ class PlayerConnection(
         mediaMetadata.flatMapLatest {
             database.song(it?.id)
         }
-    val currentLyrics =
-        mediaMetadata.flatMapLatest { mediaMetadata ->
-            database.lyrics(mediaMetadata?.id)
-        }
     val currentFormat =
         mediaMetadata.flatMapLatest { mediaMetadata ->
             database.format(mediaMetadata?.id)

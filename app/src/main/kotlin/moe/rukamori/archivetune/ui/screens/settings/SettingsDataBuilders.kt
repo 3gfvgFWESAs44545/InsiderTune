@@ -73,24 +73,6 @@ fun buildSettingsGroups(
             accentColor = MaterialTheme.colorScheme.tertiary,
             onClick = { navController.navigate("settings/canvas") },
         )
-    val lyrics =
-        SettingsItem(
-            key = "lyrics",
-            icon = painterResource(R.drawable.lyrics),
-            title = stringResource(R.string.lyrics),
-            subtitle = stringResource(R.string.settings_lyrics_subtitle),
-            accentColor = MaterialTheme.colorScheme.secondary,
-            onClick = { navController.navigate("settings/lyrics") },
-        )
-    val content =
-        SettingsItem(
-            key = "content",
-            icon = painterResource(R.drawable.language),
-            title = stringResource(R.string.content),
-            subtitle = stringResource(R.string.settings_content_subtitle),
-            accentColor = MaterialTheme.colorScheme.primary,
-            onClick = { navController.navigate("settings/content") },
-        )
     val behavior =
         SettingsItem(
             key = "behavior",
@@ -227,7 +209,6 @@ fun buildSettingsGroups(
         ),
         SettingsGroup(
             title = stringResource(R.string.settings_section_player_content),
-            // Pixel Notes: Canvas (Spotify video backgrounds) and Lyrics removed; neither works with khinsider.
             items = listOf(appearance, playback, behavior), // Pixel Notes: Content menu removed; its two useful settings are in Appearance
         ),
         SettingsGroup(

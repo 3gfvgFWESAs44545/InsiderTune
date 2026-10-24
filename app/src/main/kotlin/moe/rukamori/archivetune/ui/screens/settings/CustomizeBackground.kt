@@ -94,7 +94,6 @@ private val TONE_RANGE = 0.5f..2f
 private val EXPANDED_CONTENT_BREAKPOINT = 840.dp
 private val CONTENT_MAX_WIDTH = 1200.dp
 private const val PLAYER_PREVIEW_ASPECT_RATIO = 718f / 1518f
-private const val LYRICS_PREVIEW_ASPECT_RATIO = 720f / 1386f
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -351,7 +350,7 @@ private fun BackgroundPreviewSection(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.Top,
             ) {
                 BackgroundPreviewPane(
@@ -361,16 +360,7 @@ private fun BackgroundPreviewSection(
                     imageUri = parsedUri,
                     blur = blur,
                     colorFilter = colorFilter,
-                    modifier = Modifier.weight(1f),
-                )
-                BackgroundPreviewPane(
-                    title = stringResource(R.string.custom_background_preview_lyrics),
-                    previewDrawable = R.drawable.lyrics_preview,
-                    aspectRatio = LYRICS_PREVIEW_ASPECT_RATIO,
-                    imageUri = parsedUri,
-                    blur = blur,
-                    colorFilter = colorFilter,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier.fillMaxWidth(0.55f),
                 )
             }
             if (parsedUri == null) {

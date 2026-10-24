@@ -11,36 +11,16 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+/**
+ * Pixel Notes: lyrics were removed. The table is kept (always empty) only so existing
+ * databases open without a migration.
+ */
 @Entity(tableName = "lyrics")
 data class LyricsEntity(
     @PrimaryKey val id: String,
     val lyrics: String,
     @ColumnInfo(defaultValue = "'REMOTE'")
-    val source: String = Source.REMOTE.value,
+    val source: String = "REMOTE",
     @ColumnInfo(defaultValue = "0")
-    val updatedAt: Long = System.currentTimeMillis(),
-) {
-    fun hasGenericSource(): Boolean =
-        source == Source.REMOTE.value ||
-            source == Source.USER_SELECTION.value ||
-            source == Source.EMBEDDED.value
-
-    fun hasTranslationSource(): Boolean =
-        source == Source.TRANSLATION.value ||
-            source == Source.AI_TRANSLATION.value
-
-    companion object {
-        const val LYRICS_NOT_FOUND = "LYRICS_NOT_FOUND"
-    }
-
-    enum class Source(
-        val value: String,
-    ) {
-        REMOTE("REMOTE"),
-        EMBEDDED("EMBEDDED"),
-        USER_SELECTION("USER_SELECTION"),
-        USER_EDIT("USER_EDIT"),
-        TRANSLATION("TRANSLATION"),
-        AI_TRANSLATION("AI_TRANSLATION"),
-    }
-}
+    val updatedAt: Long = 0L,
+)

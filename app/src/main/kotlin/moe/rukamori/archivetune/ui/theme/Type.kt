@@ -140,7 +140,6 @@ private fun buildTypography(fontFamily: FontFamily) =
     )
 
 val AppFontFamily = FontFamily(Font(R.font.poppins))
-val LyricsFontFamily = FontFamily(Font(R.font.sfprodisplaybold))
 val AppTypography = buildTypography(AppFontFamily)
 val SystemTypography = buildTypography(FontFamily.Default)
 

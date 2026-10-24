@@ -367,13 +367,6 @@ dependencies {
     ksp(libs.kotlin.metadata.jvm)
 
     implementation(project(":core"))
-    implementation(project(":lyrics:kugou"))
-    implementation(project(":lyrics:lrclib"))
-    implementation(project(":lyrics:simpmusic"))
-    implementation(project(":lyrics:paxsenix"))
-    implementation(project(":lyrics:betterlyrics"))
-    implementation(project(":lyrics:unison"))
-    implementation(project(":lyrics:youlyplus"))
     implementation(project(":canvas"))
     implementation(project(":shazamkit"))
     implementation(project(":spotifycore"))
@@ -398,8 +391,6 @@ dependencies {
     implementation(libs.translator)
     implementation("androidx.lifecycle:lifecycle-process:2.11.0")
     implementation("androidx.compose.material3.adaptive:adaptive:1.4.0-alpha03")
-    implementation(libs.accompanist.lyrics.ui)
-    implementation(libs.accompanist.lyrics.core)
 }
 
 androidComponents {
